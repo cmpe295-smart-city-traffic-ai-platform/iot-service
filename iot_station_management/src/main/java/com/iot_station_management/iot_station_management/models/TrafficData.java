@@ -1,0 +1,70 @@
+package com.iot_station_management.iot_station_management.models;
+
+import jakarta.persistence.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import java.util.Date;
+import java.util.UUID;
+
+@Document("trafficdata")
+public class TrafficData {
+    @Id
+    private UUID id;
+    private UUID deviceId;
+
+    // TODO add current flow JSON as field for traffic data
+
+    private String deviceType;
+
+    private String location;
+
+    private Date createdAt;
+
+    public TrafficData(UUID id, UUID deviceId, String deviceType, String location, Date createdAt) {
+        this.id = id;
+        this.deviceId = deviceId;
+        this.deviceType = deviceType;
+        this.location = location;
+        this.createdAt = createdAt;
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public UUID getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(UUID deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(String deviceType) {
+        this.deviceType = deviceType;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+}

@@ -1,0 +1,17 @@
+services:
+  postgresql:
+    image: postgres:16.2-bullseye
+    environment:
+      - POSTGRES_USER=iot_station
+      - POSTGRES_PASSWORD=iot_station
+      - POSTGRES_DB=smart_city_traffic
+    ports:
+      - 5432:5432
+  mongodb:
+    image: mongo:latest
+    environment:
+      - MONGO_DATABASE=trafficdata
+      - MONGO_USERNAME=iot_station
+      - MONGO_PASSWORD=iot_station
+    ports:
+      - 27017:27017

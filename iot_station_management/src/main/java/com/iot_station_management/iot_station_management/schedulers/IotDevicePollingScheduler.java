@@ -8,20 +8,31 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+// class that handles making API requests for traffic data for active IOT devices
 @Component
 public class IotDevicePollingScheduler {
     private final IotDeviceServiceImpl iotDeviceService;
+
+    private final int POLL_DURATION = 5000;
 
     @Autowired
     public IotDevicePollingScheduler(IotDeviceServiceImpl iotDeviceService) {
         this.iotDeviceService = iotDeviceService;
     }
 
-    @Scheduled(fixedRate = 3000)
+    /**
+     *
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws InterruptedException
+     */
+    @Scheduled(fixedRate = POLL_DURATION)
     @Async("asyncTaskExecutor")
-    public void schedulePollTraffic() {
+    public void schedulePollTraffic() throws IOException, URISyntaxException, InterruptedException {
         // get active devices
         ArrayList<IotDevice> activeDevices = this.iotDeviceService.getActiveIotDevices();
 

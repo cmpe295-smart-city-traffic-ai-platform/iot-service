@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
+// class that handles database interactions to PostgreSQL via JPA
+// @Repository annotation indicates bean will handle SQL queries
 @Repository
 public interface IotDeviceRepository extends JpaRepository<IotDevice, UUID> {
     ArrayList<IotDevice> findIotDeviceByUserId(UUID userId);

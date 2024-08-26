@@ -6,6 +6,15 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+
+/**
+ * entry point into spring boot application
+ * @SpringBootApplication annotation
+ * - wrapper for following annotations
+ * @SpringBootConfiguration - defines bean configuration
+ * @EnableAutoConfiguration - enables auto configuration of beans, configure beans
+ * @ComponentScan - scan beans throughout project within spring framework
+ */
 @SpringBootApplication
 @EnableScheduling
 public class IotStationManagementApplication {

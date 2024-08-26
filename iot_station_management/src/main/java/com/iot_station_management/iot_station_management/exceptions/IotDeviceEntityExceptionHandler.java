@@ -9,6 +9,7 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 
+// class that handles exceptions thrown and returns corresponding HTTP statuses
 @ControllerAdvice
 public class IotDeviceEntityExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)

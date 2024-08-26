@@ -12,7 +12,7 @@ public class TrafficData {
     private UUID id;
     private UUID deviceId;
 
-    // TODO add current flow JSON as field for traffic data
+    private String trafficData;
 
     private String deviceType;
 
@@ -20,9 +20,10 @@ public class TrafficData {
 
     private Date createdAt;
 
-    public TrafficData(UUID id, UUID deviceId, String deviceType, String location, Date createdAt) {
+    public TrafficData(UUID id, UUID deviceId, String trafficData, String deviceType, String location, Date createdAt) {
         this.id = id;
         this.deviceId = deviceId;
+        this.trafficData = trafficData;
         this.deviceType = deviceType;
         this.location = location;
         this.createdAt = createdAt;
@@ -66,5 +67,13 @@ public class TrafficData {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getTrafficData() {
+        return trafficData;
+    }
+
+    public void setTrafficData(String trafficData) {
+        this.trafficData = trafficData;
     }
 }

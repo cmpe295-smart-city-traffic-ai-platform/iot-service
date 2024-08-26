@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Date;
 import java.util.UUID;
 
+// class that maps to a database table through JPA, Hibernate, @Entity annotation
 @Entity
 public class IotDevice {
     public static final String IOT_DEVICE_TYPE = "IOT_CAMERA";

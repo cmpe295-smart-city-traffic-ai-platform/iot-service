@@ -71,4 +71,4 @@ Represent object classes. For database entites, models are mapped to database ta
 3. In IntelliJ open project directory for `iot_station_management`. This should open the project within IDE and start installing dependencies through Maven.
 4. From root directory of `iot_station_management` run command `docker-compose up -d`. This will start up local Postgres and Mongo databases running in containers. The local Spring Boot application will try to connect to the databases configured in `application-dev.properties`. The configurations of the containers can be found within `docker-compose.yml`. 
 5. Go to `IotStationManagementApplication.java`, in the top right corner press green play button to start the application. After project is compiled, service will be running locally at `localhost:8080` (port 8080)
-6. Requests can be made via Postmanm or cURL to `http://localhost:8000/api/iot/v1` 
+6. Requests can be made via Postman or cURL to `http://localhost:8000/api/iot/v1` 

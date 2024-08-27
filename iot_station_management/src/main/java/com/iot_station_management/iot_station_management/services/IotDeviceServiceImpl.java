@@ -159,8 +159,12 @@ public class IotDeviceServiceImpl implements IotDeviceService {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         String trafficDataResponseString = response.body();
 
+        Date createdDate = new Date();
+
+        long timestamp = System.currentTimeMillis() / 1000L;
+
         // create traffic data and save to mongo nosql database
-        TrafficData trafficData = new TrafficData(trafficDataID, deviceId, trafficDataResponseString, IotDevice.IOT_DEVICE_TYPE, location, new Date());
+        TrafficData trafficData = new TrafficData(trafficDataID, deviceId, trafficDataResponseString, IotDevice.IOT_DEVICE_TYPE, location, createdDate, timestamp);
         return this.trafficDataRepository.save(trafficData);
     }
 
@@ -170,9 +174,8 @@ public class IotDeviceServiceImpl implements IotDeviceService {
      * @return - traffic data for device id
      */
     @Override
-    public TrafficData getTrafficData(UUID deviceId) {
+    public TrafficData getRecentTrafficData(UUID deviceId) {
         // TODO get latest traffic data for device id based on most recent timestamp
-//        return this.trafficDataRepository.findById(UUID deviceID);
-        return null;
+        return this.trafficDataRepository.findFirstByDeviceIdOrderByTimestampDesc(deviceId);
     }
 }

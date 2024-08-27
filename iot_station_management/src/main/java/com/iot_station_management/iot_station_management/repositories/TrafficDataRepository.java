@@ -8,4 +8,5 @@ import java.util.UUID;
 
 @Repository
 public interface TrafficDataRepository extends MongoRepository<TrafficData, UUID> {
+    TrafficData findFirstByDeviceIdOrderByTimestampDesc(UUID deviceId);
 }

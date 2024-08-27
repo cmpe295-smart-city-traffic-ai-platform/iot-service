@@ -20,13 +20,16 @@ public class TrafficData {
 
     private Date createdAt;
 
-    public TrafficData(UUID id, UUID deviceId, String trafficData, String deviceType, String location, Date createdAt) {
+    private long timestamp;
+
+    public TrafficData(UUID id, UUID deviceId, String trafficData, String deviceType, String location, Date createdAt, long timestamp) {
         this.id = id;
         this.deviceId = deviceId;
         this.trafficData = trafficData;
         this.deviceType = deviceType;
         this.location = location;
         this.createdAt = createdAt;
+        this.timestamp = timestamp;
     }
 
     public UUID getId() {
@@ -75,5 +78,13 @@ public class TrafficData {
 
     public void setTrafficData(String trafficData) {
         this.trafficData = trafficData;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
     }
 }

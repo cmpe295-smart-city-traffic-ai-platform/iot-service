@@ -23,5 +23,5 @@ public interface IotDeviceService {
 
     TrafficData pollTraffic(UUID deviceId, String location) throws IOException, InterruptedException, URISyntaxException;
 
-    TrafficData getTrafficData(UUID deviceId);
+    TrafficData getRecentTrafficData(UUID deviceId);
 }

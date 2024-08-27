@@ -2,6 +2,7 @@ package com.iot_station_management.iot_station_management.controllers;
 
 import com.iot_station_management.iot_station_management.models.CreateIotDeviceRequest;
 import com.iot_station_management.iot_station_management.models.IotDevice;
+import com.iot_station_management.iot_station_management.models.TrafficData;
 import com.iot_station_management.iot_station_management.models.UpdateIotDeviceRequest;
 import com.iot_station_management.iot_station_management.services.IotDeviceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,17 +57,18 @@ public class IotDeviceController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // method that handles PUT requests to /api/iot/v1
+    // method that handles PUT requests to /api/iot/v1/{userId}/{deviceId}
     @PutMapping(path = "/{userId}/{deviceId}")
     public ResponseEntity<IotDevice> updateIotDevice(@PathVariable String userId, @PathVariable String deviceId, @RequestBody UpdateIotDeviceRequest updateIotDeviceRequest) {
         IotDevice updatedDevice = this.iotDeviceService.updateIotDevice(UUID.fromString(userId), UUID.fromString(deviceId), updateIotDeviceRequest.getActive(), updateIotDeviceRequest.getName(), updateIotDeviceRequest.getLocation());
         return new ResponseEntity<>(updatedDevice, HttpStatus.OK);
     }
 
-//    // TODO get latest traffic data for device
-//    @GetMapping(path = "/traffic/{deviceId}")
-//    public ResponseEntity<String> getLatestDeviceTrafficData(@PathVariable String deviceId) {
-//
-//    }
+    // method that handles GET requests to /api/iot/v1/traffic/{deviceId}
+    @GetMapping(path = "/traffic/{deviceId}")
+    public ResponseEntity<TrafficData> getLatestDeviceTrafficData(@PathVariable String deviceId) {
+        TrafficData recentTrafficData = this.iotDeviceService.getRecentTrafficData(UUID.fromString(deviceId));
+        return new ResponseEntity<>(recentTrafficData, HttpStatus.OK);
+    }
 
 }

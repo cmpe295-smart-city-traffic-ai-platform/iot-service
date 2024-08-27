@@ -155,8 +155,8 @@ public class IotDeviceServiceImpl implements IotDeviceService {
 
         // use HttpClient to make API request
         HttpClient client = HttpClient.newHttpClient();
-
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        // TODO convert JSON string to JSON
         String trafficDataResponseString = response.body();
 
         Date createdDate = new Date();
@@ -175,7 +175,6 @@ public class IotDeviceServiceImpl implements IotDeviceService {
      */
     @Override
     public TrafficData getRecentTrafficData(UUID deviceId) {
-        // TODO get latest traffic data for device id based on most recent timestamp
         return this.trafficDataRepository.findFirstByDeviceIdOrderByTimestampDesc(deviceId);
     }
 }

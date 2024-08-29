@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +37,7 @@ public class IotDeviceController {
     }
 
     /**
-     *
+     * method that handles POST requests to /api/iot/v1
      * @param createIotDeviceRequest - request representing new IOT device fields
      * @return
      */
@@ -48,7 +49,7 @@ public class IotDeviceController {
             @ApiResponse(responseCode = "201", description = "IOT Device created successfully.")
     })
     @PostMapping
-    public ResponseEntity<IotDevice> createIotDevice(@RequestBody CreateIotDeviceRequest createIotDeviceRequest) {
+    public ResponseEntity<IotDevice> createIotDevice(@Valid @RequestBody CreateIotDeviceRequest createIotDeviceRequest) {
         Date createdDate = new Date();
         long createdTimestamp = System.currentTimeMillis() / 1000L;
         IotDevice newIotDevice = new IotDevice(createIotDeviceRequest.getName(),
@@ -114,7 +115,7 @@ public class IotDeviceController {
             @ApiResponse(responseCode = "404", description = "IOT Device not found for update.")
     })
     @PutMapping(path = "/{userId}/{deviceId}")
-    public ResponseEntity<IotDevice> updateIotDevice(@PathVariable String userId, @PathVariable String deviceId, @RequestBody UpdateIotDeviceRequest updateIotDeviceRequest) {
+    public ResponseEntity<IotDevice> updateIotDevice(@PathVariable String userId, @PathVariable String deviceId, @Valid @RequestBody UpdateIotDeviceRequest updateIotDeviceRequest) {
         IotDevice updatedDevice = this.iotDeviceService.updateIotDevice(UUID.fromString(userId), UUID.fromString(deviceId), updateIotDeviceRequest.getActive(), updateIotDeviceRequest.getName(), updateIotDeviceRequest.getLocation());
         return new ResponseEntity<>(updatedDevice, HttpStatus.OK);
     }

@@ -1,9 +1,12 @@
 package com.iot_station_management.iot_station_management.models;
 
+import com.iot_station_management.iot_station_management.utils.RegExpClass;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 
 import java.util.Date;
 import java.util.UUID;
@@ -17,18 +20,27 @@ public class IotDevice {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+
+    @NotNull
+    @Pattern(regexp = RegExpClass.ALPHA_NUMERIC_DASH_REGEX)
     private String name;
 
+    @NotNull
+    @Pattern(regexp = RegExpClass.DD_COORDINATE_REGEX, message = "IOT Device location must be latitude,longitude")
     private String location;
 
+    @NotNull
     private UUID userId;
 
+    @NotNull
     private Boolean active;
 
+    @NotNull
     private Date createdAt;
 
     private Date updatedAt;
 
+    @NotNull
     private long createdAtTimestamp;
 
     private long updatedAtTimestamp;

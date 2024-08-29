@@ -1,10 +1,15 @@
 package com.iot_station_management.iot_station_management.models;
 
+import com.iot_station_management.iot_station_management.utils.RegExpClass;
+import jakarta.validation.constraints.Pattern;
+
 public class UpdateIotDeviceRequest {
     private Boolean active;
 
+    @Pattern(regexp = RegExpClass.ALPHA_NUMERIC_DASH_REGEX, message = "Updating IOT Device name must be alphanumeric")
     private String name;
 
+    @Pattern(regexp = RegExpClass.DD_COORDINATE_REGEX, message = "Updating IOT Device location must be latitude,longitude")
     private String location;
 
     public UpdateIotDeviceRequest(Boolean active, String name, String location) {

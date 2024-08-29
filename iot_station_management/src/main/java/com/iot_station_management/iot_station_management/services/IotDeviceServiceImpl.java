@@ -39,8 +39,12 @@ public class IotDeviceServiceImpl implements IotDeviceService {
     private final String TRAFFIC_SPEED_UNIT = "unit=MPH";
     private final String OPEN_LR = "openLr=false";
 
-    // @Autowired automatically wires beans for dependencies within Spring framework
-    // Autowiring through constructor, dependency injection
+    /**
+     * @Autowired automatically wires beans for dependencies within Spring framework
+     * Autowiring through constructor, dependency injection
+     * @param iotDeviceRepository - IOT Device repository for SQL database operations
+     * @param trafficDataRepository - Traffic Data repository for NoSQL database operations
+     */
     @Autowired
     public IotDeviceServiceImpl(IotDeviceRepository iotDeviceRepository, TrafficDataRepository trafficDataRepository) {
         this.iotDeviceRepository = iotDeviceRepository;
@@ -115,6 +119,10 @@ public class IotDeviceServiceImpl implements IotDeviceService {
         }
 
         iotDevice.setUpdatedAt(new Date());
+
+        long updatedTimestamp = System.currentTimeMillis() / 1000L;
+
+        iotDevice.setUpdatedAtTimestamp(updatedTimestamp);
 
         return this.iotDeviceRepository.save(iotDevice);
     }

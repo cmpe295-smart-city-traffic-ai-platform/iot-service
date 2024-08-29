@@ -4,8 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.UUID;
@@ -31,16 +29,22 @@ public class IotDevice {
 
     private Date updatedAt;
 
+    private long createdAtTimestamp;
+
+    private long updatedAtTimestamp;
+
     public IotDevice() {
     }
 
-    public IotDevice(String name, String location, UUID userId, Boolean active, Date createdAt, Date updatedAt) {
+    public IotDevice(String name, String location, UUID userId, Boolean active, Date createdAt, Date updatedAt, long createdAtTimestamp, long updatedAtTimestamp) {
         this.name = name;
         this.location = location;
         this.userId = userId;
         this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.createdAtTimestamp = createdAtTimestamp;
+        this.updatedAtTimestamp = updatedAtTimestamp;
     }
 
     public UUID getId() {
@@ -93,5 +97,29 @@ public class IotDevice {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public long getCreatedAtTimestamp() {
+        return createdAtTimestamp;
+    }
+
+    public void setCreatedAtTimestamp(long createdAtTimestamp) {
+        this.createdAtTimestamp = createdAtTimestamp;
+    }
+
+    public long getUpdatedAtTimestamp() {
+        return updatedAtTimestamp;
+    }
+
+    public void setUpdatedAtTimestamp(long updatedAtTimestamp) {
+        this.updatedAtTimestamp = updatedAtTimestamp;
     }
 }

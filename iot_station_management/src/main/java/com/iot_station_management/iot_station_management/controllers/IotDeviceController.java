@@ -6,6 +6,8 @@ import com.iot_station_management.iot_station_management.models.TrafficData;
 import com.iot_station_management.iot_station_management.models.UpdateIotDeviceRequest;
 import com.iot_station_management.iot_station_management.services.IotDeviceServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,7 @@ import java.util.UUID;
 // dispatcher servlet routes request, controller handles request and calls corresponding methods to handle
 // requests with URI /api/iot/v1 are handled by this controller
 @Tag(name = "IOT Device", description = "IOT Device APIs")
+// @RestController annotation used for handling requests, returns response entity, @Controller and @ResponseBody annotations
 @RestController
 @RequestMapping("/api/iot/v1")
 public class IotDeviceController {
@@ -32,25 +35,39 @@ public class IotDeviceController {
         this.iotDeviceService = iotDeviceService;
     }
 
-    // method that handles POST requests to /api/iot/v1
+    /**
+     *
+     * @param createIotDeviceRequest - request representing new IOT device fields
+     * @return
+     */
     @Operation(
             summary = "Create new IOT device",
             description = "Create new IOT device based on provided name, location, user ID, and active state"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "IOT Device created successfully.")
+    })
     @PostMapping
     public ResponseEntity<IotDevice> createIotDevice(@RequestBody CreateIotDeviceRequest createIotDeviceRequest) {
         Date createdDate = new Date();
+        long createdTimestamp = System.currentTimeMillis() / 1000L;
         IotDevice newIotDevice = new IotDevice(createIotDeviceRequest.getName(),
                 createIotDeviceRequest.getLocation(),
                 createIotDeviceRequest.getUserId(),
                 createIotDeviceRequest.getActive(),
                 createdDate,
-                createdDate);
+                createdDate,
+                createdTimestamp,
+                createdTimestamp);
         IotDevice createdIotDevice = this.iotDeviceService.createIotDevice(newIotDevice);
         return new ResponseEntity<>(createdIotDevice, HttpStatus.CREATED);
     }
 
-    // method that handles GET requests to /api/iot/v1
+    /**
+     * method that handles GET requests to /api/iot/v1
+     * @param userId - User ID to get devices for
+     * @return - Array list of IOT Devices for user
+     */
     @Operation(
             summary = "Get IOT devices",
             description = "Get IOT devices for given user ID"
@@ -61,33 +78,59 @@ public class IotDeviceController {
         return new ResponseEntity<>(iotDevices, HttpStatus.OK);
     }
 
-    // method that handles DELETE requests to /api/iot/v1/{userId}/{deviceId}
+    /**
+     * method that handles DELETE requests to /api/iot/v1/{userId}/{deviceId}
+     * @param userId - User ID of IOT Device
+     * @param deviceId - IOT Device ID
+     * @return - void operation if successful, exception is thrown if error during deletion
+     */
     @Operation(
             summary = "Delete IOT Device",
             description = "Delete IOT device for given user ID and device ID"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "IOT Device deleted successfully."),
+            @ApiResponse(responseCode = "404", description = "IOT Device not found for deletion.")
+    })
     @DeleteMapping(path = "/{userId}/{deviceId}")
     public ResponseEntity<Void> deleteIotDevice(@PathVariable String userId, @PathVariable String deviceId) {
         this.iotDeviceService.deleteIotDevice(UUID.fromString(userId), UUID.fromString(deviceId));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    // method that handles PUT requests to /api/iot/v1/{userId}/{deviceId}
+    /**
+     * method that handles PUT requests to /api/iot/v1/{userId}/{deviceId}
+     * @param userId - User ID of IOT Device
+     * @param deviceId - IOT Device ID
+     * @param updateIotDeviceRequest - request representing which properties to update
+     * @return - Updated IOT Device
+     */
     @Operation(
             summary = "Update IOT Device",
             description = "Update IOT device for given user ID and device ID. Active state, location, and name can be updated"
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "IOT Device updated successfully."),
+            @ApiResponse(responseCode = "404", description = "IOT Device not found for update.")
+    })
     @PutMapping(path = "/{userId}/{deviceId}")
     public ResponseEntity<IotDevice> updateIotDevice(@PathVariable String userId, @PathVariable String deviceId, @RequestBody UpdateIotDeviceRequest updateIotDeviceRequest) {
         IotDevice updatedDevice = this.iotDeviceService.updateIotDevice(UUID.fromString(userId), UUID.fromString(deviceId), updateIotDeviceRequest.getActive(), updateIotDeviceRequest.getName(), updateIotDeviceRequest.getLocation());
         return new ResponseEntity<>(updatedDevice, HttpStatus.OK);
     }
 
-    // method that handles GET requests to /api/iot/v1/traffic/{deviceId}
+    /**
+     * method that handles GET requests to /api/iot/v1/traffic/{deviceId}
+     * @param deviceId - IOT Device ID
+     * @return - Most recent traffic data
+     */
     @Operation(
             summary = "Get Latest IOT Device Traffic Data",
             description = "Get latest IOT device traffic data for given device ID."
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "IOT Device traffic data retrieved."),
+    })
     @GetMapping(path = "/traffic/{deviceId}")
     public ResponseEntity<TrafficData> getLatestDeviceTrafficData(@PathVariable String deviceId) {
         TrafficData recentTrafficData = this.iotDeviceService.getRecentTrafficData(UUID.fromString(deviceId));

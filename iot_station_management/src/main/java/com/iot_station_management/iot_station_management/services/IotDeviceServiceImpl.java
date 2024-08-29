@@ -10,9 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -135,37 +133,40 @@ public class IotDeviceServiceImpl implements IotDeviceService {
      * @param deviceId - IOT Device ID to poll traffic for
      * @param location - Location in latitude,longitude format
      * @return - created traffic data
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws URISyntaxException
      */
     @Override
-    public TrafficData pollTraffic(UUID deviceId, String location) throws IOException, InterruptedException, URISyntaxException {
-        logger.info("Polling traffic from device id: " + deviceId + " for location: " + location);
-        UUID trafficDataID = UUID.randomUUID();
+    public TrafficData pollTraffic(UUID deviceId, String location) {
+        try {
+            logger.info("Polling traffic from device id: " + deviceId + " for location: " + location);
+            UUID trafficDataID = UUID.randomUUID();
 
-        // making API request
-        String trafficApiUrlWithParams = trafficApiUrl + "?" + TRAFFIC_SPEED_UNIT + "&" + OPEN_LR + "&point=" +  location + "&key=" + trafficApiKey;
+            // making API request
+            String trafficApiUrlWithParams = trafficApiUrl + "?" + TRAFFIC_SPEED_UNIT + "&" + OPEN_LR + "&point=" +  location + "&key=" + trafficApiKey;
 
-        logger.info("Traffic API URL with params: " + trafficApiUrlWithParams);
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(new URI(trafficApiUrlWithParams))
-                .GET()
-                .build();
+            logger.info("Traffic API URL with params: " + trafficApiUrlWithParams);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(trafficApiUrlWithParams))
+                    .GET()
+                    .build();
 
-        // use HttpClient to make API request
-        HttpClient client = HttpClient.newHttpClient();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        // TODO convert JSON string to JSON
-        String trafficDataResponseString = response.body();
+            // use HttpClient to make API request
+            HttpClient client = HttpClient.newHttpClient();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            // TODO convert JSON string to JSON
+            String trafficDataResponseString = response.body();
 
-        Date createdDate = new Date();
+            Date createdDate = new Date();
 
-        long timestamp = System.currentTimeMillis() / 1000L;
+            // convert timestamp from milliseconds to seconds
+            long timestamp = System.currentTimeMillis() / 1000L;
 
-        // create traffic data and save to mongo nosql database
-        TrafficData trafficData = new TrafficData(trafficDataID, deviceId, trafficDataResponseString, IotDevice.IOT_DEVICE_TYPE, location, createdDate, timestamp);
-        return this.trafficDataRepository.save(trafficData);
+            // create traffic data and save to mongo nosql database
+            TrafficData trafficData = new TrafficData(trafficDataID, deviceId, trafficDataResponseString, IotDevice.IOT_DEVICE_TYPE, location, createdDate, timestamp);
+            return this.trafficDataRepository.save(trafficData);
+        } catch(Exception e) {
+            logger.error("Exception from pollTraffic: " + e.getMessage());
+            return null;
+        }
     }
 
     /**

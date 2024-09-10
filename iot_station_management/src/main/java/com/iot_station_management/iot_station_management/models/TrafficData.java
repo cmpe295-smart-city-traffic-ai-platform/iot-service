@@ -18,6 +18,8 @@ public class TrafficData {
 
     private String location;
 
+    private String MAJOR_ROAD;
+
     private Date createdAt;
 
     private long timestamp;
@@ -28,6 +30,17 @@ public class TrafficData {
         this.trafficData = trafficData;
         this.deviceType = deviceType;
         this.location = location;
+        this.createdAt = createdAt;
+        this.timestamp = timestamp;
+    }
+
+    public TrafficData(UUID id, UUID deviceId, String trafficData, String deviceType, String location, String MAJOR_ROAD, Date createdAt, long timestamp) {
+        this.id = id;
+        this.deviceId = deviceId;
+        this.trafficData = trafficData;
+        this.deviceType = deviceType;
+        this.location = location;
+        this.MAJOR_ROAD = MAJOR_ROAD;
         this.createdAt = createdAt;
         this.timestamp = timestamp;
     }
@@ -86,5 +99,13 @@ public class TrafficData {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getMAJOR_ROAD() {
+        return MAJOR_ROAD;
+    }
+
+    public void setMAJOR_ROAD(String MAJOR_ROAD) {
+        this.MAJOR_ROAD = MAJOR_ROAD;
     }
 }

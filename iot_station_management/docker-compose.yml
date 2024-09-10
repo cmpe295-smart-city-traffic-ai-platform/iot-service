@@ -7,6 +7,8 @@ services:
       - POSTGRES_DB=smart_city_traffic
     ports:
       - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
   mongodb:
     image: mongo:latest
     environment:
@@ -15,3 +17,9 @@ services:
       - MONGO_PASSWORD=iot_station
     ports:
       - 27017:27017
+    volumes:
+      - ./mongo_data:/data/db
+
+volumes:
+  db:
+    driver: local

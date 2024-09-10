@@ -56,6 +56,7 @@ public class IotDeviceController {
                 createIotDeviceRequest.getLocation(),
                 createIotDeviceRequest.getUserId(),
                 createIotDeviceRequest.getActive(),
+                IotDevice.MajorRoad.valueOf(createIotDeviceRequest.getMajorRoad()),
                 createdDate,
                 createdDate,
                 createdTimestamp,

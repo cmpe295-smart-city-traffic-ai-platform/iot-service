@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.UUID;
 
 // service that defines methods to be implemented by IotDeviceServie
@@ -21,7 +22,7 @@ public interface IotDeviceService {
 
     ArrayList<IotDevice> getActiveIotDevices();
 
-    TrafficData pollTraffic(UUID deviceId, String location) throws IOException, InterruptedException, URISyntaxException;
+    TrafficData pollTraffic(UUID deviceId, String location, IotDevice.MajorRoad majorRoad, Date createdDate) throws IOException, InterruptedException, URISyntaxException;
 
     TrafficData getRecentTrafficData(UUID deviceId);
 }

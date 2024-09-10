@@ -8,13 +8,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 // class that handles making API requests for traffic data for active IOT devices
 @Component
 public class IotDevicePollingScheduler {
     private final IotDeviceServiceImpl iotDeviceService;
 
-    private final int POLL_DURATION = 5000;
+    private final int POLL_DURATION = 600;
 
     @Autowired
     public IotDevicePollingScheduler(IotDeviceServiceImpl iotDeviceService) {
@@ -24,16 +26,18 @@ public class IotDevicePollingScheduler {
     /**
      * Scheduled method to poll traffic data for active IOT devices
      */
-    @Scheduled(fixedRate = POLL_DURATION)
+    @Scheduled(fixedRate = POLL_DURATION, timeUnit = TimeUnit.SECONDS)
     @Async("asyncTaskExecutor")
-    public void schedulePollTraffic() {
+    public void schedulePollTraffic() throws InterruptedException {
         // get active devices
         ArrayList<IotDevice> activeDevices = this.iotDeviceService.getActiveIotDevices();
 
         if (!activeDevices.isEmpty()) {
+            Date createdDate = new Date();
             // poll traffic data
             for (IotDevice activeDevice : activeDevices) {
-                this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation());
+                Thread.sleep(1000);
+                this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation(), activeDevice.getMajorRoad(), createdDate);
             }
         }
     }

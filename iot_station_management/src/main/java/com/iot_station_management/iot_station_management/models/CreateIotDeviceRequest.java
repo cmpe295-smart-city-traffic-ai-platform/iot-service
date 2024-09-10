@@ -1,6 +1,7 @@
 package com.iot_station_management.iot_station_management.models;
 
 import com.iot_station_management.iot_station_management.utils.RegExpClass;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -20,8 +21,29 @@ public class CreateIotDeviceRequest {
     @NotNull
     UUID userId;
 
+    @Nullable
+    String majorRoad;
+
     @NotNull
     Boolean active;
+
+    public CreateIotDeviceRequest() {
+    }
+
+    public CreateIotDeviceRequest(String name, String location, UUID userId, Boolean active) {
+        this.name = name;
+        this.location = location;
+        this.userId = userId;
+        this.active = active;
+    }
+
+    public CreateIotDeviceRequest(String name, String location, UUID userId, @Nullable String majorRoad, Boolean active) {
+        this.name = name;
+        this.location = location;
+        this.userId = userId;
+        this.majorRoad = majorRoad;
+        this.active = active;
+    }
 
     public String getName() {
         return name;
@@ -53,5 +75,14 @@ public class CreateIotDeviceRequest {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    @Nullable
+    public String getMajorRoad() {
+        return majorRoad;
+    }
+
+    public void setMajorRoad(@Nullable String majorRoad) {
+        this.majorRoad = majorRoad;
     }
 }

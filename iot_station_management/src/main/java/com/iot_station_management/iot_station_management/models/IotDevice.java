@@ -1,6 +1,7 @@
 package com.iot_station_management.iot_station_management.models;
 
 import com.iot_station_management.iot_station_management.utils.RegExpClass;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,7 +15,17 @@ import java.util.UUID;
 // class that maps to a database table through JPA, Hibernate, @Entity annotation
 @Entity
 public class IotDevice {
-    public static final String IOT_DEVICE_TYPE = "IOT_CAMERA";
+    public static final String IOT_DEVICE_TYPE = "IOT";
+
+    public enum MajorRoad {
+        I280,
+        CA85,
+        CA82,
+        US101,
+        I680,
+        I880,
+        CA237
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -35,6 +46,9 @@ public class IotDevice {
     @NotNull
     private Boolean active;
 
+    @Nullable
+    private MajorRoad majorRoad;
+
     @NotNull
     private Date createdAt;
 
@@ -53,6 +67,18 @@ public class IotDevice {
         this.location = location;
         this.userId = userId;
         this.active = active;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.createdAtTimestamp = createdAtTimestamp;
+        this.updatedAtTimestamp = updatedAtTimestamp;
+    }
+
+    public IotDevice(String name, String location, UUID userId, Boolean active, @Nullable MajorRoad majorRoad, Date createdAt, Date updatedAt, long createdAtTimestamp, long updatedAtTimestamp) {
+        this.name = name;
+        this.location = location;
+        this.userId = userId;
+        this.active = active;
+        this.majorRoad = majorRoad;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.createdAtTimestamp = createdAtTimestamp;
@@ -133,5 +159,14 @@ public class IotDevice {
 
     public void setUpdatedAtTimestamp(long updatedAtTimestamp) {
         this.updatedAtTimestamp = updatedAtTimestamp;
+    }
+
+    @Nullable
+    public MajorRoad getMajorRoad() {
+        return majorRoad;
+    }
+
+    public void setMajorRoad(@Nullable MajorRoad majorRoad) {
+        this.majorRoad = majorRoad;
     }
 }

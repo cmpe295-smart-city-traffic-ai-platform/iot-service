@@ -1,1 +1,6 @@
 .idea/**
+iot_station_management/pg-data/*
+iot_station_management/mongo_data/*
+iot_station_management/diagnostic.data/
+iot_station_management/journal/
+iot_station_management/pg_hba.conf

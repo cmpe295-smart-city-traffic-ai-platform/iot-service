@@ -34,88 +34,146 @@ def get_haversine_distance(lat1, lon1, lat2, lon2):
     # apply formula
     a = (pow(math.sin(dLat / 2), 2) +
          pow(math.sin(dLon / 2), 2) *
-         math.cos(lat1) * math.cos(lat2));
+         math.cos(lat1) * math.cos(lat2))
     rad = 6371
     c = 2 * math.asin(math.sqrt(a))
     return rad * c
 
+
+# for each device id, compare distance with all other sensors
 def get_sensor_distances(device_id_locations):
     from_to_distances = []
 
     for i in range(0, len(device_id_locations)):
         for j in range(0, len(device_id_locations)):
-            if (device_id_locations[i]['deviceId'] == device_id_locations[j]['deviceId']):
+            # skip comparing distance to itself
+            if (device_id_locations[i]['sensor_id'] == device_id_locations[j]['sensor_id']):
                 continue
-            print(f"Comparing {device_id_locations[i]['deviceId']} to {device_id_locations[j]['deviceId']}")
+            # print(f"Comparing {device_id_locations[i]['deviceId']} to {device_id_locations[j]['deviceId']}")
             lat1 = float(device_id_locations[i]['latitude'])
             long1 = float(device_id_locations[i]['longitude'])
 
             lat2 = float(device_id_locations[j]['latitude'])
             long2 = float(device_id_locations[j]['longitude'])
+            # use haversine distance between two points
             distance = get_haversine_distance(lat1, long1, lat2, long2)
-            print(f"Distance: {distance}")
-            from_to_distances.append({'from': device_id_locations[i]['deviceId'], 'to': device_id_locations[j]['deviceId'], 'cost': distance})
+            # print(f"Distance: {distance}")
+            from_to_distances.append({'from': device_id_locations[i]['sensor_id'], 'to': device_id_locations[j]['sensor_id'], 'cost': distance})
 
     return from_to_distances
 
-def process_data():
+def process_data(MAJOR_ROAD):
+    # query mongodb database collection for traffic data by major road
     client = MongoClient(uuidRepresentation='pythonLegacy')
-
     db = client.trafficdata
-
     collection = db.trafficdata
 
-
     trafficdata = collection.find({
-        'MAJOR_ROAD': "US101"
+        'MAJOR_ROAD': MAJOR_ROAD
     }).sort({'timestamp': 1})
 
     trafficdata_list = list(trafficdata)
+
+    # keep track of current speed values
     current_speed_values = []
     pst_created_at_dates = []
 
+    # keep track of device ids and device id locations
     device_id_locations_set = set()
     device_id_locations = []
+
+    # keep track of speed values for each device id
     device_id_values = {}
     device_id_values['Date'] = []
 
+    device_id_location_index = 0
+
+    # go through each traffic data record in ascending order by timestamp
     for traffic in trafficdata_list:
         # get speed value from traffic data JSON
         trafficData = json.loads(traffic['trafficData'])
         current_speed = trafficData['flowSegmentData']['currentSpeed']
         current_speed_values.append(current_speed)
 
-        # convert utc to pst
+        # convert utc to pst, 7 hour difference
         created_at_pst = traffic['createdAt'] - timedelta(hours=7)
         created_at_pst_formatted = created_at_pst.strftime('%Y-%m-%d %H:%M')
         if created_at_pst_formatted not in pst_created_at_dates:
             pst_created_at_dates.append(created_at_pst_formatted)
 
+        # keep track of distinct device ids
         if traffic['deviceId'] not in device_id_locations_set:
             device_id_locations_set.add(traffic['deviceId'])
             location_split = traffic['location'].split(',')
             if traffic['deviceId'] not in device_id_values:
                 device_id_values[traffic['deviceId']] = []
-            device_id_locations.append({'deviceId': traffic['deviceId'], 'latitude': location_split[0], 'longitude': location_split[1]})
+            # map device id to location
+            device_id_locations.append({'index': device_id_location_index, 'sensor_id': traffic['deviceId'], 'latitude': location_split[0], 'longitude': location_split[1]})
+            device_id_location_index += 1
+        # add speed value for device id
         device_id_values.get(traffic['deviceId'], []).append(current_speed)
 
+    # device ids
+    print("Writing graph sensor ids txt file....")
+    device_ids_txt_file = open(f"{MAJOR_ROAD}_graph_sensor_ids.txt", "w")
+    for device_id in device_id_locations_set:
+        device_ids_txt_file.write(f"{str(device_id)},")
+    device_ids_txt_file.close()
 
     # generate from to distances
     from_to_distances = get_sensor_distances(device_id_locations)
-
     df_from_to_distances = pd.DataFrame.from_records(from_to_distances)
     display(df_from_to_distances)
 
+    # device id locations
     device_id_locations_df = pd.DataFrame.from_records(device_id_locations)
     display(device_id_locations_df)
+    device_id_locations_df.to_csv(f"{MAJOR_ROAD}_graph_sensor_locations.csv", index=False)
 
 
-    print(len(device_id_values.keys()))
-    print(f" length of dates: {len(pst_created_at_dates)}")
+    print(f"PST dates length: {len(pst_created_at_dates)}")
 
-    device_id_values['Date'] = pst_created_at_dates
-    print(f"pst dates: {pst_created_at_dates}")
-    print(device_id_values)
+    # update dataframe for speed values
+    min_value_length = math.inf
+    max_value_length = 0
+    for device_id in device_id_values.keys():
+        if (device_id == 'Date'):
+            continue
+        print(f"Key: {device_id}")
+        print(f"Length of values: {len(device_id_values.get(device_id))}")
+        # find minimum length
+        if len(device_id_values.get(device_id)) < min_value_length:
+            min_value_length = len(device_id_values.get(device_id))
+        # find maximum length
+        if len(device_id_values.get(device_id)) > max_value_length:
+            max_value_length = len(device_id_values.get(device_id))
+
+    print(f"Min Value Length: {min_value_length}")
+    print(f"Max Value Length: {max_value_length}")
+
+    # if min != max, need to remove values to meet min values
+    if min_value_length != max_value_length:
+        max_min_diff = abs(max_value_length - min_value_length)
+        print(f"Need to remove {max_min_diff} values")
+
+        # remove N dates
+        pst_created_at_dates = pst_created_at_dates[max_min_diff:]
+        device_id_values['Date'] = pst_created_at_dates
+
+        # for each device id values remove N values if not equal to min
+        print("Removing values...")
+        for device_id in device_id_values.keys():
+            current_device_id_values = device_id_values[device_id]
+            # update values after removing N dates
+            if len(current_device_id_values) != min_value_length:
+                print("updating...")
+                diff_value = abs(len(current_device_id_values) - min_value_length)
+                device_id_values[device_id] = current_device_id_values[diff_value:]
+
+    for device_id in device_id_values.keys():
+        print(f"Key: {device_id}")
+        print(f"Length of values: {len(device_id_values.get(device_id))}")
+
     speeds_by_ids_df = pd.DataFrame.from_dict(device_id_values)
     display(speeds_by_ids_df)
 
@@ -187,7 +245,7 @@ def process_data():
 
 
 if __name__ == "__main__":
-    process_data()
+    process_data("I880")
     # filename = "metr-la.h5"
     # hf = h5py.File(filename, 'r')
     # print(hf)

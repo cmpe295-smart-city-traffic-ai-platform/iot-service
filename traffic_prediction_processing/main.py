@@ -124,6 +124,7 @@ def process_data(MAJOR_ROAD):
     from_to_distances = get_sensor_distances(device_id_locations)
     df_from_to_distances = pd.DataFrame.from_records(from_to_distances)
     display(df_from_to_distances)
+    df_from_to_distances.to_csv(f"{MAJOR_ROAD}_distances.csv", index=False)
 
     # device id locations
     device_id_locations_df = pd.DataFrame.from_records(device_id_locations)

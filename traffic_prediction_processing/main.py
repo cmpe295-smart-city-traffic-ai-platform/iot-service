@@ -1,17 +1,10 @@
-import bson
 import h5py
 import numpy as np
 import pandas
-import pymongo
 from pymongo import MongoClient
 import json
 import math
-from datetime import datetime, timedelta
-from dateutil import tz
-from zoneinfo import ZoneInfo
-from pytz import timezone
-
-from numpy import load
+from datetime import datetime
 from IPython.display import display
 import pandas as pd
 
@@ -76,10 +69,10 @@ def process_data(MAJOR_ROAD):
 
     # keep track of current speed values
     current_speed_values = []
-    pst_created_at_dates = []
+    created_at_dates = []
 
     # keep track of device ids and device id locations
-    device_id_locations_set = set()
+    device_id_set = set()
     device_id_locations = []
 
     # keep track of speed values for each device id
@@ -95,44 +88,44 @@ def process_data(MAJOR_ROAD):
         current_speed = trafficData['flowSegmentData']['currentSpeed']
         current_speed_values.append(current_speed)
 
-        # convert utc to pst, 7 hour difference
-        created_at_pst = traffic['createdAt'] - timedelta(hours=7)
-        created_at_pst_formatted = created_at_pst.strftime('%Y-%m-%d %H:%M')
-        if created_at_pst_formatted not in pst_created_at_dates:
-            pst_created_at_dates.append(created_at_pst_formatted)
+        # convert utc to timestamp
+        created_at_timestamp = int(round(datetime.timestamp(traffic['createdAt'])))
+        if created_at_timestamp not in created_at_dates:
+            created_at_dates.append(created_at_timestamp)
 
         # keep track of distinct device ids
-        if traffic['deviceId'] not in device_id_locations_set:
-            device_id_locations_set.add(traffic['deviceId'])
+        # convert from UUID to int to str and slice first 12
+        device_id_int = int(str(int(traffic['deviceId']))[:12])
+        print(f"device id int converted: {device_id_int}")
+
+        # keep track of distinct device ids
+        if device_id_int not in device_id_set:
+            device_id_set.add(device_id_int)
             location_split = traffic['location'].split(',')
-            if traffic['deviceId'] not in device_id_values:
-                device_id_values[traffic['deviceId']] = []
+            if device_id_int not in device_id_values:
+                device_id_values[device_id_int] = []
             # map device id to location
-            device_id_locations.append({'index': device_id_location_index, 'sensor_id': traffic['deviceId'], 'latitude': location_split[0], 'longitude': location_split[1]})
+            device_id_locations.append({'index': device_id_location_index, 'sensor_id': device_id_int, 'latitude': location_split[0], 'longitude': location_split[1]})
             device_id_location_index += 1
         # add speed value for device id
-        device_id_values.get(traffic['deviceId'], []).append(current_speed)
+        device_id_values.get(device_id_int, []).append(current_speed)
 
     # device ids
     print("Writing graph sensor ids txt file....")
     device_ids_txt_file = open(f"{MAJOR_ROAD}_graph_sensor_ids.txt", "w")
-    for device_id in device_id_locations_set:
+    for device_id in device_id_set:
         device_ids_txt_file.write(f"{str(device_id)},")
     device_ids_txt_file.close()
 
     # generate from to distances
     from_to_distances = get_sensor_distances(device_id_locations)
     df_from_to_distances = pd.DataFrame.from_records(from_to_distances)
-    display(df_from_to_distances)
     df_from_to_distances.to_csv(f"{MAJOR_ROAD}_distances.csv", index=False)
 
     # device id locations
     device_id_locations_df = pd.DataFrame.from_records(device_id_locations)
     display(device_id_locations_df)
     device_id_locations_df.to_csv(f"{MAJOR_ROAD}_graph_sensor_locations.csv", index=False)
-
-
-    print(f"PST dates length: {len(pst_created_at_dates)}")
 
     # update dataframe for speed values
     min_value_length = math.inf
@@ -158,8 +151,8 @@ def process_data(MAJOR_ROAD):
         print(f"Need to remove {max_min_diff} values")
 
         # remove N dates
-        pst_created_at_dates = pst_created_at_dates[max_min_diff:]
-        device_id_values['Date'] = pst_created_at_dates
+        created_at_dates = created_at_dates[max_min_diff:]
+        device_id_values['Date'] = created_at_dates
 
         # for each device id values remove N values if not equal to min
         print("Removing values...")
@@ -175,130 +168,90 @@ def process_data(MAJOR_ROAD):
         print(f"Key: {device_id}")
         print(f"Length of values: {len(device_id_values.get(device_id))}")
 
-    speeds_by_ids_df = pd.DataFrame.from_dict(device_id_values)
+    # create matrix of speed values timestamps x sensor ids
+    speed_values_by_date = []
+
+    for i in range(min_value_length):
+        speed_values_current_date = []
+        for device_id in device_id_set:
+            speed_values_current_date.append(device_id_values.get(device_id)[i])
+        speed_values_by_date.append(speed_values_current_date)
+    print(f"device ids: {device_id_set}")
+    print(f"speed values by date: {speed_values_by_date}")
+    print(np.array(speed_values_by_date).shape)
+
+    device_id_list = []
+    for device_id in device_id_set:
+        device_id_list.append(device_id)
+
+    # create dataframe for speeds by ids
+    speeds_by_ids_df = pd.DataFrame(data=speed_values_by_date, index=created_at_dates, columns=device_id_list)
     display(speeds_by_ids_df)
-
-
-    # df = pd.DataFrame.from_records(trafficdata_list)
-    # df = df.drop('trafficData', axis=1)
-    # df = df.drop('_id', axis=1)
-    # df = df.drop('_class', axis=1)
-    # df = df.drop('createdAt', axis=1)
-    # df.insert(2, "Speed", current_speed_values, True)
-    # df.insert(3, "Created At PST", pst_created_at_dates, True)
-    # display(df)
-
-
-    # df = pd.read_csv('280_1_trafficdata.9_5_2024.csv')
-    # display(df.columns)
-    # df = df.drop('_class', axis=1)
-    # display(df)
-    # df['deviceId'] = df['deviceId'].apply(lambda x : bson)
-    # display(df['deviceId'])
-
-
-
-
-
-    # d1 = np.random.randint(0, 100, size =1000)
-    #
-    # hf = h5py.File('data.h5', 'w')
-    # hf.create_dataset('test_1', data=d1)
-    # hf.close()
-    #
-    # filename = "metr-la.h5"
-    # # hf = h5py.File(filename, 'r')
-    # # print(hf.keys())
-    # # print(np.array(hf.get('speed')))
-    #
-    #
-    # df = pd.read_hdf(filename)
-    # display(df)
-
-
-
-
-    # df = pd.DataFrame(np.array(h5py.File(filename)['speed']))
-    # display(df)
-
-    # # df.drop("400017")
-    # # display(df.keys())
-
-    # data = load('train.npz')
-    # print(data['x'])
-
-    # print("dcrnn predictions: \n")
-    # data = load('dcrnn_predictions_bay.npz')
-    # lst = data.files
-    # print(lst)
-    #
-    # print("predictions: \n")
-    # predictions = data['prediction']
-    # predicted_values = []
-    #
-    # for prediction in data['prediction']:
-    #     for value in prediction:
-    #         predicted_values.append(value)
-    #
-    #
-    # predictions_df = pandas.DataFrame(predicted_values)
-    # display(predictions_df)
-
+    speeds_by_ids_df.to_hdf('data.h5', key='speed', mode='w')
 
 if __name__ == "__main__":
     process_data("I880")
-    # filename = "metr-la.h5"
-    # hf = h5py.File(filename, 'r')
-    # print(hf)
-    # print(list(hf.keys()))
-    # group_df = hf['df']
+
+    filename = "pems-bay.h5"
+    hf = h5py.File(filename, 'r')
+    for key in hf.keys():
+        print(f"Key: {key}")
+    print(hf)
+    print(list(hf.keys()))
+    group_df = hf['speed']
+    print(type(group_df))
+    print(group_df.items())
+    print(group_df.keys())
+    print(type(group_df['axis0']))
+    print(type(group_df['axis1']))
+    print(f"axis0 shape: {group_df.get('axis0').shape}")
+    print(f"axis1 shape: {group_df.get('axis1').shape}")
+    print(f"block0_items shape: {group_df.get('block0_items').shape}")
+    print(f"block0_values shape: {group_df.get('block0_values').shape}")
+
+
+    print("\n")
+    print("checking h5 dataset values ***********")
+    print(type(group_df))
+    print(group_df.values())
+    print(group_df.keys())
+    print(group_df['axis0'][()])
+    print(group_df['axis1'][:])
+    print(len(group_df['axis1'][:]))
+    print(group_df['block0_values'][:])
+    print(group_df['block0_items'][:])
+
+    print("\n")
+    print("checking data.h5*******")
+    test_filename = "data.h5"
+    hf = h5py.File(test_filename, 'r')
+    print(hf)
+    print(list(hf.keys()))
+    group_df = hf['speed']
+
+    print(type(group_df))
+    print(group_df.keys())
+    print(group_df.items())
+    print(type(group_df['axis0']))
+    print(type(group_df['axis1']))
+    # # axis0 shape: (207,)
+    # # axis1 shape: (34272,)
+    # # block0_items shape: (207,)
+    # # block0_values shape: (34272, 207)
+    print(f"axis0 shape: {group_df.get('axis0').shape}")
+    print(f"axis1 shape: {group_df.get('axis1').shape}")
+    print(f"block0_items shape: {group_df.get('block0_items').shape}")
+    print(f"block0_values shape: {group_df.get('block0_values').shape}")
     #
-    # print(type(group_df))
-    # print(group_df.values())
-    # print(group_df.keys())
-    # print(group_df['axis0'])
-    # print(group_df['axis1'][:])
-    # print(list(group_df.items()))
-    #
-    # dataset1 = np.array(group_df['axis0'])
-    # dataset2 = np.array(group_df['axis1'])
-    # dataset3 = np.array(group_df['block0_items'])
-    # dataset4 = np.array(group_df['block0_values'])
-    # for value in dataset1:
-    #     print(value.decode('utf-8'))
+    print(group_df.get('axis0')[()])
+    print(group_df.get('block0_values')[()])
+    print(group_df.get('axis1')[()])
+    print(group_df.get('block0_items')[()])
 
-    # print(len(dataset2))
-    # print(dataset2[0])
-    # for value in dataset2:
-    #     print(value)
-
-
-    # print(len(dataset3))
-    # print(dataset3[0])
-
-    # print(len(dataset4))
-    # print(len(dataset4[0]))
-    # print(dataset4[0])
-
-
-
-    # print(dataset.keys())
-    # print(dataset.values())
-    # print(dataset.items())
-    # print(list(group_df.get('axis0')))
-    # print(list(group_df.get('axis1')))
-    # print(list(dataset.get('block0_items')))
-    # print(list(dataset.get('block0_values')))
-
-
-
-    # print(dataset.groups)
-
-
-    #
-    # df = pd.read_hdf(filename)
-    # print(df.keys())
-    # print(type(df))
-    # print(type(df.columns))
-    # print(df.head())
-    # print(df.iloc[0])
+    df = pd.read_hdf('data.h5', 'speed')
+    print("read_hdf values ************")
+    print(df.keys())
+    print(df.values.shape)
+    print(len(df.values))
+    print(len(df.values[0]))
+    display(df)

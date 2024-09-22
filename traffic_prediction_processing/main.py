@@ -1,10 +1,12 @@
 import h5py
+import os
 import numpy as np
+from numpy import load
 import pandas
 from pymongo import MongoClient
 import json
 import math
-from datetime import datetime
+from datetime import datetime, timedelta
 from IPython.display import display
 import pandas as pd
 
@@ -56,6 +58,8 @@ def get_sensor_distances(device_id_locations):
     return from_to_distances
 
 def process_data(MAJOR_ROAD):
+    if not os.path.exists(MAJOR_ROAD):
+        os.makedirs(MAJOR_ROAD)
     # query mongodb database collection for traffic data by major road
     client = MongoClient(uuidRepresentation='pythonLegacy')
     db = client.trafficdata
@@ -81,6 +85,9 @@ def process_data(MAJOR_ROAD):
 
     device_id_location_index = 0
 
+    device_ids_mapping_file = open(f"{MAJOR_ROAD}/{MAJOR_ROAD}_device_ids_mapping.txt", "w")
+
+
     # go through each traffic data record in ascending order by timestamp
     for traffic in trafficdata_list:
         # get speed value from traffic data JSON
@@ -89,7 +96,8 @@ def process_data(MAJOR_ROAD):
         current_speed_values.append(current_speed)
 
         # convert utc to timestamp
-        created_at_timestamp = int(round(datetime.timestamp(traffic['createdAt'])))
+        # created_at_timestamp = int(round(datetime.timestamp(traffic['createdAt'])))
+        created_at_timestamp = traffic['createdAt'] - timedelta(hours=7)
         if created_at_timestamp not in created_at_dates:
             created_at_dates.append(created_at_timestamp)
 
@@ -97,6 +105,7 @@ def process_data(MAJOR_ROAD):
         # convert from UUID to int to str and slice first 12
         device_id_int = int(str(int(traffic['deviceId']))[:12])
         print(f"device id int converted: {device_id_int}")
+
 
         # keep track of distinct device ids
         if device_id_int not in device_id_set:
@@ -107,25 +116,27 @@ def process_data(MAJOR_ROAD):
             # map device id to location
             device_id_locations.append({'index': device_id_location_index, 'sensor_id': device_id_int, 'latitude': location_split[0], 'longitude': location_split[1]})
             device_id_location_index += 1
+            device_ids_mapping_file.write(f"{traffic['deviceId']}:{device_id_int}\n")
         # add speed value for device id
         device_id_values.get(device_id_int, []).append(current_speed)
 
     # device ids
     print("Writing graph sensor ids txt file....")
-    device_ids_txt_file = open(f"{MAJOR_ROAD}_graph_sensor_ids.txt", "w")
+    device_ids_txt_file = open(f"{MAJOR_ROAD}/{MAJOR_ROAD}_graph_sensor_ids.txt", "w")
     for device_id in device_id_set:
         device_ids_txt_file.write(f"{str(device_id)},")
     device_ids_txt_file.close()
+    device_ids_mapping_file.close()
 
     # generate from to distances
     from_to_distances = get_sensor_distances(device_id_locations)
     df_from_to_distances = pd.DataFrame.from_records(from_to_distances)
-    df_from_to_distances.to_csv(f"{MAJOR_ROAD}_distances.csv", index=False)
+    df_from_to_distances.to_csv(f"{MAJOR_ROAD}/{MAJOR_ROAD}_distances.csv", index=False)
 
     # device id locations
     device_id_locations_df = pd.DataFrame.from_records(device_id_locations)
     display(device_id_locations_df)
-    device_id_locations_df.to_csv(f"{MAJOR_ROAD}_graph_sensor_locations.csv", index=False)
+    device_id_locations_df.to_csv(f"{MAJOR_ROAD}/{MAJOR_ROAD}_graph_sensor_locations.csv", index=False)
 
     # update dataframe for speed values
     min_value_length = math.inf
@@ -187,71 +198,91 @@ def process_data(MAJOR_ROAD):
     # create dataframe for speeds by ids
     speeds_by_ids_df = pd.DataFrame(data=speed_values_by_date, index=created_at_dates, columns=device_id_list)
     display(speeds_by_ids_df)
-    speeds_by_ids_df.to_hdf('data.h5', key='speed', mode='w')
+    df_path = f"{MAJOR_ROAD}/{MAJOR_ROAD}.h5"
+    speeds_by_ids_df.to_hdf(df_path, key='speed', mode='w')
 
 if __name__ == "__main__":
-    process_data("I880")
+    process_data("CA85")
 
-    filename = "pems-bay.h5"
-    hf = h5py.File(filename, 'r')
-    for key in hf.keys():
-        print(f"Key: {key}")
-    print(hf)
-    print(list(hf.keys()))
-    group_df = hf['speed']
-    print(type(group_df))
-    print(group_df.items())
-    print(group_df.keys())
-    print(type(group_df['axis0']))
-    print(type(group_df['axis1']))
-    print(f"axis0 shape: {group_df.get('axis0').shape}")
-    print(f"axis1 shape: {group_df.get('axis1').shape}")
-    print(f"block0_items shape: {group_df.get('block0_items').shape}")
-    print(f"block0_values shape: {group_df.get('block0_values').shape}")
-
-
-    print("\n")
-    print("checking h5 dataset values ***********")
-    print(type(group_df))
-    print(group_df.values())
-    print(group_df.keys())
-    print(group_df['axis0'][()])
-    print(group_df['axis1'][:])
-    print(len(group_df['axis1'][:]))
-    print(group_df['block0_values'][:])
-    print(group_df['block0_items'][:])
-
-    print("\n")
-    print("checking data.h5*******")
-    test_filename = "data.h5"
-    hf = h5py.File(test_filename, 'r')
-    print(hf)
-    print(list(hf.keys()))
-    group_df = hf['speed']
-
-    print(type(group_df))
-    print(group_df.keys())
-    print(group_df.items())
-    print(type(group_df['axis0']))
-    print(type(group_df['axis1']))
-    # # axis0 shape: (207,)
-    # # axis1 shape: (34272,)
-    # # block0_items shape: (207,)
-    # # block0_values shape: (34272, 207)
-    print(f"axis0 shape: {group_df.get('axis0').shape}")
-    print(f"axis1 shape: {group_df.get('axis1').shape}")
-    print(f"block0_items shape: {group_df.get('block0_items').shape}")
-    print(f"block0_values shape: {group_df.get('block0_values').shape}")
+    # filename = "pems-bay.h5"
+    # hf = h5py.File(filename, 'r')
+    # for key in hf.keys():
+    #     print(f"Key: {key}")
+    # print(hf)
+    # print(list(hf.keys()))
+    # group_df = hf['speed']
+    # print(type(group_df))
+    # print(group_df.items())
+    # print(group_df.keys())
+    # print(type(group_df['axis0']))
+    # print(type(group_df['axis1']))
+    # print(f"axis0 shape: {group_df.get('axis0').shape}")
+    # print(f"axis1 shape: {group_df.get('axis1').shape}")
+    # print(f"block0_items shape: {group_df.get('block0_items').shape}")
+    # print(f"block0_values shape: {group_df.get('block0_values').shape}")
     #
-    print(group_df.get('axis0')[()])
-    print(group_df.get('block0_values')[()])
-    print(group_df.get('axis1')[()])
-    print(group_df.get('block0_items')[()])
+    #
+    # print("\n")
+    # print("checking h5 dataset values ***********")
+    # print(type(group_df))
+    # print(group_df.values())
+    # print(group_df.keys())
+    # print(group_df['axis0'][()])
+    # print(group_df['axis1'][:])
+    # print(len(group_df['axis1'][:]))
+    # print(group_df['block0_values'][:])
+    # print(group_df['block0_items'][:])
 
-    df = pd.read_hdf('data.h5', 'speed')
-    print("read_hdf values ************")
-    print(df.keys())
-    print(df.values.shape)
-    print(len(df.values))
-    print(len(df.values[0]))
-    display(df)
+    # print("\n")
+    # print("checking data.h5*******")
+    # test_filename = "data.h5"
+    # hf = h5py.File(test_filename, 'r')
+    # print(hf)
+    # print(list(hf.keys()))
+    # group_df = hf['speed']
+    #
+    # print(type(group_df))
+    # print(group_df.keys())
+    # print(group_df.items())
+    # print(type(group_df['axis0']))
+    # print(type(group_df['axis1']))
+    # # # axis0 shape: (207,)
+    # # # axis1 shape: (34272,)
+    # # # block0_items shape: (207,)
+    # # # block0_values shape: (34272, 207)
+    # print(f"axis0 shape: {group_df.get('axis0').shape}")
+    # print(f"axis1 shape: {group_df.get('axis1').shape}")
+    # print(f"block0_items shape: {group_df.get('block0_items').shape}")
+    # print(f"block0_values shape: {group_df.get('block0_values').shape}")
+    # #
+    # print(group_df.get('axis0')[()])
+    # print(group_df.get('block0_values')[()])
+    # print(group_df.get('axis1')[()])
+    # print(group_df.get('block0_items')[()])
+    #
+    # df = pd.read_hdf('data.h5', 'speed')
+    # print("read_hdf values ************")
+    # print(df.keys())
+    # print(df.values.shape)
+    # print(len(df.values))
+    # print(len(df.values[0]))
+    # display(df)
+
+    # data = load('dcrnn_predictions_pytorch.npz')
+    # prediction_data = np.array(data['prediction'])
+    # print(prediction_data.shape)
+    #
+    # print(prediction_data[0])
+    # print(prediction_data[0].shape)
+    #
+    # print(prediction_data[1])
+    # print(prediction_data[1].shape)
+    #
+    # # for data in prediction_data:
+    # #     print(data)
+    # predictions_df = pd.DataFrame(data=prediction_data[0])
+    # display(predictions_df)
+
+
+
+

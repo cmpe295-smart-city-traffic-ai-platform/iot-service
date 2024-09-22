@@ -15,58 +15,14 @@ pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 pandas.set_option('display.expand_frame_repr', False)
 
-# reference: https://www.geeksforgeeks.org/haversine-formula-to-find-distance-between-two-points-on-a-sphere/
-def get_haversine_distance(lat1, lon1, lat2, lon2):
-    # distance between latitudes
-    # and longitudes
-    dLat = (lat2 - lat1) * math.pi / 180.0
-    dLon = (lon2 - lon1) * math.pi / 180.0
-
-    # convert to radians
-    lat1 = (lat1) * math.pi / 180.0
-    lat2 = (lat2) * math.pi / 180.0
-
-    # apply formula
-    a = (pow(math.sin(dLat / 2), 2) +
-         pow(math.sin(dLon / 2), 2) *
-         math.cos(lat1) * math.cos(lat2))
-    rad = 6371
-    c = 2 * math.asin(math.sqrt(a))
-    return rad * c
-
-
-# for each device id, compare distance with all other sensors
-def get_sensor_distances(device_id_locations):
-    from_to_distances = []
-
-    for i in range(0, len(device_id_locations)):
-        for j in range(0, len(device_id_locations)):
-            # skip comparing distance to itself
-            if (device_id_locations[i]['sensor_id'] == device_id_locations[j]['sensor_id']):
-                continue
-            # print(f"Comparing {device_id_locations[i]['deviceId']} to {device_id_locations[j]['deviceId']}")
-            lat1 = float(device_id_locations[i]['latitude'])
-            long1 = float(device_id_locations[i]['longitude'])
-
-            lat2 = float(device_id_locations[j]['latitude'])
-            long2 = float(device_id_locations[j]['longitude'])
-            # use haversine distance between two points
-            distance = get_haversine_distance(lat1, long1, lat2, long2)
-            # print(f"Distance: {distance}")
-            from_to_distances.append({'from': device_id_locations[i]['sensor_id'], 'to': device_id_locations[j]['sensor_id'], 'cost': distance})
-
-    return from_to_distances
-
-def process_data(MAJOR_ROAD):
-    if not os.path.exists(MAJOR_ROAD):
-        os.makedirs(MAJOR_ROAD)
+def process_data():
     # query mongodb database collection for traffic data by major road
     client = MongoClient(uuidRepresentation='pythonLegacy')
     db = client.trafficdata
     collection = db.trafficdata
 
     trafficdata = collection.find({
-        'MAJOR_ROAD': MAJOR_ROAD
+        'deviceIdNo': {'$exists': True}
     }).sort({'timestamp': 1})
 
     trafficdata_list = list(trafficdata)
@@ -85,9 +41,6 @@ def process_data(MAJOR_ROAD):
 
     device_id_location_index = 0
 
-    device_ids_mapping_file = open(f"{MAJOR_ROAD}/{MAJOR_ROAD}_device_ids_mapping.txt", "w")
-
-
     # go through each traffic data record in ascending order by timestamp
     for traffic in trafficdata_list:
         # get speed value from traffic data JSON
@@ -102,10 +55,8 @@ def process_data(MAJOR_ROAD):
             created_at_dates.append(created_at_timestamp)
 
         # keep track of distinct device ids
-        # convert from UUID to int to str and slice first 12
-        device_id_int = int(str(int(traffic['deviceId']))[:12])
+        device_id_int = int(traffic['deviceIdNo'])
         print(f"device id int converted: {device_id_int}")
-
 
         # keep track of distinct device ids
         if device_id_int not in device_id_set:
@@ -116,27 +67,8 @@ def process_data(MAJOR_ROAD):
             # map device id to location
             device_id_locations.append({'index': device_id_location_index, 'sensor_id': device_id_int, 'latitude': location_split[0], 'longitude': location_split[1]})
             device_id_location_index += 1
-            device_ids_mapping_file.write(f"{traffic['deviceId']}:{device_id_int}\n")
         # add speed value for device id
         device_id_values.get(device_id_int, []).append(current_speed)
-
-    # device ids
-    print("Writing graph sensor ids txt file....")
-    device_ids_txt_file = open(f"{MAJOR_ROAD}/{MAJOR_ROAD}_graph_sensor_ids.txt", "w")
-    for device_id in device_id_set:
-        device_ids_txt_file.write(f"{str(device_id)},")
-    device_ids_txt_file.close()
-    device_ids_mapping_file.close()
-
-    # generate from to distances
-    from_to_distances = get_sensor_distances(device_id_locations)
-    df_from_to_distances = pd.DataFrame.from_records(from_to_distances)
-    df_from_to_distances.to_csv(f"{MAJOR_ROAD}/{MAJOR_ROAD}_distances.csv", index=False)
-
-    # device id locations
-    device_id_locations_df = pd.DataFrame.from_records(device_id_locations)
-    display(device_id_locations_df)
-    device_id_locations_df.to_csv(f"{MAJOR_ROAD}/{MAJOR_ROAD}_graph_sensor_locations.csv", index=False)
 
     # update dataframe for speed values
     min_value_length = math.inf
@@ -198,11 +130,11 @@ def process_data(MAJOR_ROAD):
     # create dataframe for speeds by ids
     speeds_by_ids_df = pd.DataFrame(data=speed_values_by_date, index=created_at_dates, columns=device_id_list)
     display(speeds_by_ids_df)
-    df_path = f"{MAJOR_ROAD}/{MAJOR_ROAD}.h5"
+    df_path = f"data.h5"
     speeds_by_ids_df.to_hdf(df_path, key='speed', mode='w')
 
 if __name__ == "__main__":
-    process_data("CA85")
+    process_data()
 
     # filename = "pems-bay.h5"
     # hf = h5py.File(filename, 'r')

@@ -22,7 +22,7 @@ public interface IotDeviceService {
 
     ArrayList<IotDevice> getActiveIotDevices();
 
-    TrafficData pollTraffic(UUID deviceId, String location, IotDevice.MajorRoad majorRoad, Date createdDate) throws IOException, InterruptedException, URISyntaxException;
+    TrafficData pollTraffic(UUID deviceId, String location, int deviceIdNo, Date createdDate) throws IOException, InterruptedException, URISyntaxException;
 
     TrafficData getRecentTrafficData(UUID deviceId);
 }

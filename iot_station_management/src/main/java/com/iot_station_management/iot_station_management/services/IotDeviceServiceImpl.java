@@ -143,7 +143,7 @@ public class IotDeviceServiceImpl implements IotDeviceService {
      * @return - created traffic data
      */
     @Override
-    public TrafficData pollTraffic(UUID deviceId, String location, IotDevice.MajorRoad majorRoad, Date createdDate) {
+    public TrafficData pollTraffic(UUID deviceId, String location, int deviceIdNo, Date createdDate) {
         try {
             logger.info("Polling traffic from device id: " + deviceId + " for location: " + location);
             UUID trafficDataID = UUID.randomUUID();
@@ -167,7 +167,7 @@ public class IotDeviceServiceImpl implements IotDeviceService {
             long timestamp = System.currentTimeMillis() / 1000L;
 
             // create traffic data and save to mongo nosql database
-            TrafficData trafficData = new TrafficData(trafficDataID, deviceId, trafficDataResponseString, IotDevice.IOT_DEVICE_TYPE, location, majorRoad.toString(), createdDate, timestamp);
+            TrafficData trafficData = new TrafficData(trafficDataID, deviceId, deviceIdNo, trafficDataResponseString, IotDevice.IOT_DEVICE_TYPE, location, createdDate, timestamp);
             return this.trafficDataRepository.save(trafficData);
         } catch(Exception e) {
             logger.error("Exception from pollTraffic: " + e.getMessage());

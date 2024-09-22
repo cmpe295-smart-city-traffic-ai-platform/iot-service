@@ -36,8 +36,8 @@ public class IotDevicePollingScheduler {
             Date createdDate = new Date();
             // poll traffic data
             for (IotDevice activeDevice : activeDevices) {
-                Thread.sleep(1000);
-                this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation(), activeDevice.getMajorRoad(), createdDate);
+                Thread.sleep(500);
+                this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation(), activeDevice.getDeviceIdNo(), createdDate);
             }
         }
     }

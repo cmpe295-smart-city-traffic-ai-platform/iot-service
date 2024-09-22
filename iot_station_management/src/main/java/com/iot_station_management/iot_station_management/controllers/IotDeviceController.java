@@ -52,11 +52,12 @@ public class IotDeviceController {
     public ResponseEntity<IotDevice> createIotDevice(@Valid @RequestBody CreateIotDeviceRequest createIotDeviceRequest) {
         Date createdDate = new Date();
         long createdTimestamp = System.currentTimeMillis() / 1000L;
-        IotDevice newIotDevice = new IotDevice(createIotDeviceRequest.getName(),
+        IotDevice newIotDevice = new IotDevice(
+                createIotDeviceRequest.getDeviceIdNo(),
+                createIotDeviceRequest.getName(),
                 createIotDeviceRequest.getLocation(),
                 createIotDeviceRequest.getUserId(),
                 createIotDeviceRequest.getActive(),
-                IotDevice.MajorRoad.valueOf(createIotDeviceRequest.getMajorRoad()),
                 createdDate,
                 createdDate,
                 createdTimestamp,

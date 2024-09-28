@@ -20,13 +20,13 @@ public interface IotDeviceRepository extends JpaRepository<IotDevice, UUID> {
     ArrayList<IotDevice> findIotDeviceByActiveIsTrue();
 
     @Query(
-            value = "SELECT * FROM iot_device WHERE major_road IN ('CA237', 'CA85', 'CA87')",
+            value = "SELECT * FROM iot_device WHERE major_road IN (1, 6, 7)",
             nativeQuery = true)
     ArrayList<IotDevice> findIotPredictionDevicesCaliforniaRoads();
 
 
     @Query(
-            value = "SELECT * FROM iot_device WHERE major_road IN ('I280', 'I880', 'I680', 'US101')",
+            value = "SELECT * FROM iot_device WHERE major_road IN (0, 3, 4, 5)",
             nativeQuery = true)
     ArrayList<IotDevice> findIotPredictionDevicesInterstateUSRoads();
 

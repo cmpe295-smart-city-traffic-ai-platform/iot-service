@@ -62,6 +62,9 @@ public class IotDeviceController {
                 createdDate,
                 createdTimestamp,
                 createdTimestamp);
+        if (createIotDeviceRequest.getMajorRoad() != null) {
+            newIotDevice.setMajorRoad(IotDevice.MajorRoad.valueOf(createIotDeviceRequest.getMajorRoad()));
+        }
         IotDevice createdIotDevice = this.iotDeviceService.createIotDevice(newIotDevice);
         return new ResponseEntity<>(createdIotDevice, HttpStatus.CREATED);
     }

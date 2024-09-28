@@ -1,7 +1,6 @@
 import h5py
 import os
 import numpy as np
-from numpy import load
 import pandas
 from pymongo import MongoClient
 import json
@@ -136,22 +135,7 @@ def process_data():
 if __name__ == "__main__":
     process_data()
 
-    # filename = "pems-bay.h5"
-    # hf = h5py.File(filename, 'r')
-    # for key in hf.keys():
-    #     print(f"Key: {key}")
-    # print(hf)
-    # print(list(hf.keys()))
-    # group_df = hf['speed']
-    # print(type(group_df))
-    # print(group_df.items())
-    # print(group_df.keys())
-    # print(type(group_df['axis0']))
-    # print(type(group_df['axis1']))
-    # print(f"axis0 shape: {group_df.get('axis0').shape}")
-    # print(f"axis1 shape: {group_df.get('axis1').shape}")
-    # print(f"block0_items shape: {group_df.get('block0_items').shape}")
-    # print(f"block0_values shape: {group_df.get('block0_values').shape}")
+
     #
     #
     # print("\n")

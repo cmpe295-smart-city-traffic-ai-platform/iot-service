@@ -21,7 +21,8 @@ public class IotDevice {
         US101,
         I680,
         I880,
-        CA237
+        CA237,
+        CA87
     }
 
     @Id

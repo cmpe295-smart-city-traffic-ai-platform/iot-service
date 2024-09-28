@@ -58,6 +58,18 @@ public class TrafficData {
         this.timestamp = timestamp;
     }
 
+    public TrafficData(UUID id, UUID deviceId, int deviceIdNo, String trafficData, String deviceType, String MAJOR_ROAD, String location, Date createdAt, long timestamp) {
+        this.id = id;
+        this.deviceId = deviceId;
+        this.deviceIdNo = deviceIdNo;
+        this.trafficData = trafficData;
+        this.deviceType = deviceType;
+        this.MAJOR_ROAD = MAJOR_ROAD;
+        this.location = location;
+        this.createdAt = createdAt;
+        this.timestamp = timestamp;
+    }
+
     public UUID getId() {
         return id;
     }

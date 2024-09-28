@@ -4,3 +4,8 @@ iot_station_management/mongo_data/*
 iot_station_management/diagnostic.data/
 iot_station_management/journal/
 iot_station_management/pg_hba.conf
+traffic_prediction_processing/selected_sensors/
+traffic_prediction_processing/.idea/*
+.DS_STORE
+traffic_prediction_processing/.DS_STORE
+traffic_prediction_processing/*.npz

@@ -138,12 +138,30 @@ public class IotDeviceServiceImpl implements IotDeviceService {
 
     /**
      *
+     * @return - array list of active IOT prediction devices stationed around California roads
+     */
+    @Override
+    public ArrayList<IotDevice> getActiveIotPredictionDevicesCaliforniaRoads() {
+        return this.iotDeviceRepository.findIotPredictionDevicesCaliforniaRoads();
+    }
+
+    /**
+     *
+     * @return - array list of active IOT prediction devices stationed around interstate/US roads
+     */
+    @Override
+    public ArrayList<IotDevice> getActiveIotPredictionDevicesInterstateUSRoads() {
+        return this.iotDeviceRepository.findIotPredictionDevicesInterstateUSRoads();
+    }
+
+    /**
+     *
      * @param deviceId - IOT Device ID to poll traffic for
      * @param location - Location in latitude,longitude format
      * @return - created traffic data
      */
     @Override
-    public TrafficData pollTraffic(UUID deviceId, String location, IotDevice.MajorRoad majorRoad, Date createdDate) {
+    public TrafficData pollTraffic(UUID deviceId, String location, IotDevice.MajorRoad majorRoad, int deviceIdNo, Date createdDate) {
         try {
             logger.info("Polling traffic from device id: " + deviceId + " for location: " + location);
             UUID trafficDataID = UUID.randomUUID();
@@ -167,7 +185,7 @@ public class IotDeviceServiceImpl implements IotDeviceService {
             long timestamp = System.currentTimeMillis() / 1000L;
 
             // create traffic data and save to mongo nosql database
-            TrafficData trafficData = new TrafficData(trafficDataID, deviceId, trafficDataResponseString, IotDevice.IOT_DEVICE_TYPE, location, majorRoad.toString(), createdDate, timestamp);
+            TrafficData trafficData = new TrafficData(trafficDataID, deviceId, deviceIdNo, trafficDataResponseString, IotDevice.IOT_DEVICE_TYPE, majorRoad.toString(), location, createdDate, timestamp);
             return this.trafficDataRepository.save(trafficData);
         } catch(Exception e) {
             logger.error("Exception from pollTraffic: " + e.getMessage());

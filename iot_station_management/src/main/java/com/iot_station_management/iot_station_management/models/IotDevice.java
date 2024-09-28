@@ -2,10 +2,7 @@ package com.iot_station_management.iot_station_management.models;
 
 import com.iot_station_management.iot_station_management.utils.RegExpClass;
 import jakarta.annotation.Nullable;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
@@ -24,13 +21,16 @@ public class IotDevice {
         US101,
         I680,
         I880,
-        CA237
+        CA237,
+        CA87
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @Column
+    private int deviceIdNo;
 
     @NotNull
     @Pattern(regexp = RegExpClass.ALPHA_NUMERIC_DASH_REGEX)
@@ -40,7 +40,7 @@ public class IotDevice {
     @Pattern(regexp = RegExpClass.DD_COORDINATE_REGEX, message = "IOT Device location must be latitude,longitude")
     private String location;
 
-    @NotNull
+    @Nullable
     private UUID userId;
 
     @NotNull
@@ -79,6 +79,32 @@ public class IotDevice {
         this.userId = userId;
         this.active = active;
         this.majorRoad = majorRoad;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.createdAtTimestamp = createdAtTimestamp;
+        this.updatedAtTimestamp = updatedAtTimestamp;
+    }
+
+    public IotDevice(UUID id, int deviceIdNo, String name, String location, UUID userId, Boolean active, @Nullable MajorRoad majorRoad, Date createdAt, Date updatedAt, long createdAtTimestamp, long updatedAtTimestamp) {
+        this.id = id;
+        this.deviceIdNo = deviceIdNo;
+        this.name = name;
+        this.location = location;
+        this.userId = userId;
+        this.active = active;
+        this.majorRoad = majorRoad;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.createdAtTimestamp = createdAtTimestamp;
+        this.updatedAtTimestamp = updatedAtTimestamp;
+    }
+
+    public IotDevice(int deviceIdNo, String name, String location, UUID userId, Boolean active, Date createdAt, Date updatedAt, long createdAtTimestamp, long updatedAtTimestamp) {
+        this.deviceIdNo = deviceIdNo;
+        this.name = name;
+        this.location = location;
+        this.userId = userId;
+        this.active = active;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.createdAtTimestamp = createdAtTimestamp;
@@ -168,5 +194,13 @@ public class IotDevice {
 
     public void setMajorRoad(@Nullable MajorRoad majorRoad) {
         this.majorRoad = majorRoad;
+    }
+
+    public int getDeviceIdNo() {
+        return deviceIdNo;
+    }
+
+    public void setDeviceIdNo(int deviceIdNo) {
+        this.deviceIdNo = deviceIdNo;
     }
 }

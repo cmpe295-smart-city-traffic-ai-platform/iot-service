@@ -18,11 +18,13 @@ public class CreateIotDeviceRequest {
     @Pattern(regexp = RegExpClass.DD_COORDINATE_REGEX, message="Location must be in latitude,longitude format")
     String location;
 
-    @NotNull
+    @Nullable
     UUID userId;
 
     @Nullable
     String majorRoad;
+
+    int deviceIdNo;
 
     @NotNull
     Boolean active;
@@ -34,6 +36,13 @@ public class CreateIotDeviceRequest {
         this.name = name;
         this.location = location;
         this.userId = userId;
+        this.active = active;
+    }
+
+    public CreateIotDeviceRequest(String name, String location, int deviceIdNo, Boolean active) {
+        this.name = name;
+        this.location = location;
+        this.deviceIdNo = deviceIdNo;
         this.active = active;
     }
 
@@ -84,5 +93,13 @@ public class CreateIotDeviceRequest {
 
     public void setMajorRoad(@Nullable String majorRoad) {
         this.majorRoad = majorRoad;
+    }
+
+    public int getDeviceIdNo() {
+        return deviceIdNo;
+    }
+
+    public void setDeviceIdNo(int deviceIdNo) {
+        this.deviceIdNo = deviceIdNo;
     }
 }

@@ -17,16 +17,16 @@ public interface IotDeviceRepository extends JpaRepository<IotDevice, UUID> {
 
     Optional<IotDevice> findIotDeviceByUserIdAndId(UUID userId, UUID deviceID);
 
-    ArrayList<IotDevice> findIotDeviceByActiveIsTrue();
+    ArrayList<IotDevice> findIotDeviceByActiveIsTrueAndDeviceIdNoIsNull();
 
     @Query(
-            value = "SELECT * FROM iot_device WHERE major_road IN (1, 6, 7)",
+            value = "SELECT * FROM iot_device WHERE major_road IN (1, 6, 7) AND device_id_no IS NOT NULL AND active = true",
             nativeQuery = true)
     ArrayList<IotDevice> findIotPredictionDevicesCaliforniaRoads();
 
 
     @Query(
-            value = "SELECT * FROM iot_device WHERE major_road IN (0, 3, 4, 5)",
+            value = "SELECT * FROM iot_device WHERE major_road IN (0, 3, 4, 5) AND device_id_no IS NOT NULL AND active = true",
             nativeQuery = true)
     ArrayList<IotDevice> findIotPredictionDevicesInterstateUSRoads();
 

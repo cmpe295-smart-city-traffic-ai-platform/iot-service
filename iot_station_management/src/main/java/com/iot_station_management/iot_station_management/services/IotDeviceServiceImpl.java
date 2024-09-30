@@ -36,6 +36,9 @@ public class IotDeviceServiceImpl implements IotDeviceService {
     @Value("${traffic.api.key}")
     private String trafficApiKey;
 
+    @Value("${traffic.api.california.key}")
+    private String trafficApiKeyCaliforniaRoads;
+
     private final String TRAFFIC_SPEED_UNIT = "unit=MPH";
     private final String OPEN_LR = "openLr=false";
 
@@ -133,7 +136,7 @@ public class IotDeviceServiceImpl implements IotDeviceService {
      */
     @Override
     public ArrayList<IotDevice> getActiveIotDevices() {
-        return this.iotDeviceRepository.findIotDeviceByActiveIsTrue();
+        return this.iotDeviceRepository.findIotDeviceByActiveIsTrueAndDeviceIdNoIsNull();
     }
 
     /**
@@ -161,13 +164,20 @@ public class IotDeviceServiceImpl implements IotDeviceService {
      * @return - created traffic data
      */
     @Override
-    public TrafficData pollTraffic(UUID deviceId, String location, IotDevice.MajorRoad majorRoad, int deviceIdNo, Date createdDate) {
+    public TrafficData pollTraffic(UUID deviceId, String location, IotDevice.MajorRoad majorRoad, Integer deviceIdNo, Date createdDate, Boolean isCaliforniaPolling) {
         try {
-            logger.info("Polling traffic from device id: " + deviceId + " for location: " + location);
+
+            if (deviceIdNo != null) {
+                logger.info("Polling traffic from device id no: " + deviceIdNo + " for location: " + location);
+            } else {
+                logger.info("Polling traffic from device id: " + deviceId + " for location: " + location);
+            }
             UUID trafficDataID = UUID.randomUUID();
 
+            String apiKey = !isCaliforniaPolling ? trafficApiKey : trafficApiKeyCaliforniaRoads;
+
             // making API request
-            String trafficApiUrlWithParams = trafficApiUrl + "?" + TRAFFIC_SPEED_UNIT + "&" + OPEN_LR + "&point=" +  location + "&key=" + trafficApiKey;
+            String trafficApiUrlWithParams = trafficApiUrl + "?" + TRAFFIC_SPEED_UNIT + "&" + OPEN_LR + "&point=" +  location + "&key=" + apiKey;
 
             logger.info("Traffic API URL with params: " + trafficApiUrlWithParams);
             HttpRequest request = HttpRequest.newBuilder()

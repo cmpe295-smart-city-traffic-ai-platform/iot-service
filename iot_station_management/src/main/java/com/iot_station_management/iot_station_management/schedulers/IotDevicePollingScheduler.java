@@ -18,7 +18,7 @@ public class IotDevicePollingScheduler {
 
     private final int POLL_DURATION = 600;
 
-    private final int POLL_DURATION_PREDICTION_DEVICES_CALIFORNIA_ROADS = 900;
+    private final int POLL_DURATION_PREDICTION_DEVICES_CALIFORNIA_ROADS = 600;
 
     private final int POLL_DURATION_PREDICTION_DEVICES_INTERSTATE_US_ROADS = 600;
 
@@ -42,7 +42,7 @@ public class IotDevicePollingScheduler {
             // poll traffic data
             for (IotDevice activeDevice : activeDevices) {
                 Thread.sleep(500);
-                this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation(), activeDevice.getMajorRoad(), activeDevice.getDeviceIdNo(), createdDate);
+                this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation(), activeDevice.getMajorRoad(), activeDevice.getDeviceIdNo(), createdDate, false);
             }
         }
     }
@@ -62,7 +62,7 @@ public class IotDevicePollingScheduler {
             // poll traffic data
             for (IotDevice activeDevice : activePredictionDevices) {
                 Thread.sleep(500);
-                this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation(), activeDevice.getMajorRoad(), activeDevice.getDeviceIdNo(), createdDate);
+                this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation(), activeDevice.getMajorRoad(), Integer.valueOf(activeDevice.getDeviceIdNo()), createdDate, false);
             }
         }
     }
@@ -81,7 +81,7 @@ public class IotDevicePollingScheduler {
             // poll traffic data
             for (IotDevice activeDevice : activePredictionDevices) {
                 Thread.sleep(500);
-                this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation(), activeDevice.getMajorRoad(), activeDevice.getDeviceIdNo(), createdDate);
+                this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation(), activeDevice.getMajorRoad(), activeDevice.getDeviceIdNo(), createdDate, true);
             }
         }
     }

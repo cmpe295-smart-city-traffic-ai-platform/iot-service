@@ -21,11 +21,11 @@ import java.util.UUID;
 
 // controller class that handles requests mapped to URI
 // dispatcher servlet routes request, controller handles request and calls corresponding methods to handle
-// requests with URI /api/iot/v1 are handled by this controller
+// requests with URI /api/v1/iot are handled by this controller
 @Tag(name = "IOT Device", description = "IOT Device APIs")
 // @RestController annotation used for handling requests, returns response entity, @Controller and @ResponseBody annotations
 @RestController
-@RequestMapping("/api/iot/v1")
+@RequestMapping("/api/v1/iot")
 public class IotDeviceController {
     IotDeviceServiceImpl iotDeviceService;
 
@@ -37,7 +37,7 @@ public class IotDeviceController {
     }
 
     /**
-     * method that handles POST requests to /api/iot/v1
+     * method that handles POST requests to /api/v1/iot
      * @param createIotDeviceRequest - request representing new IOT device fields
      * @return
      */
@@ -70,7 +70,7 @@ public class IotDeviceController {
     }
 
     /**
-     * method that handles GET requests to /api/iot/v1
+     * method that handles GET requests to /api/v1/iot
      * @param userId - User ID to get devices for
      * @return - Array list of IOT Devices for user
      */
@@ -85,7 +85,22 @@ public class IotDeviceController {
     }
 
     /**
-     * method that handles DELETE requests to /api/iot/v1/{userId}/{deviceId}
+     * method that handles GET requests to /api/v1/iot/predictionDevices
+     * @param majorRoad - Major Road to get IOT prediction devices for
+     * @return - Array list of IOT Devices for major road
+     */
+    @Operation(
+            summary = "Get IOT prediction",
+            description = "Get IOT prediction devices for given major road"
+    )
+    @GetMapping("/predictionDevice")
+    public ResponseEntity<ArrayList<IotDevice>> getIotPredictionDevices(@RequestParam String majorRoad) {
+        ArrayList<IotDevice> iotDevices = this.iotDeviceService.getIotPredictionDevices(IotDevice.MajorRoad.valueOf(majorRoad));
+        return new ResponseEntity<>(iotDevices, HttpStatus.OK);
+    }
+
+    /**
+     * method that handles DELETE requests to /api/v1/iot/{userId}/{deviceId}
      * @param userId - User ID of IOT Device
      * @param deviceId - IOT Device ID
      * @return - void operation if successful, exception is thrown if error during deletion
@@ -105,7 +120,7 @@ public class IotDeviceController {
     }
 
     /**
-     * method that handles PUT requests to /api/iot/v1/{userId}/{deviceId}
+     * method that handles PUT requests to /api/v1/iot/{userId}/{deviceId}
      * @param userId - User ID of IOT Device
      * @param deviceId - IOT Device ID
      * @param updateIotDeviceRequest - request representing which properties to update
@@ -126,7 +141,7 @@ public class IotDeviceController {
     }
 
     /**
-     * method that handles GET requests to /api/iot/v1/traffic/{deviceId}
+     * method that handles GET requests to /api/v1/iot/traffic/{deviceId}
      * @param deviceId - IOT Device ID
      * @return - Most recent traffic data
      */

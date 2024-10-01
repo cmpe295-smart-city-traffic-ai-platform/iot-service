@@ -90,6 +90,10 @@ public class IotDeviceServiceImpl implements IotDeviceService {
         return this.iotDeviceRepository.findIotDeviceByUserId(userId);
     }
 
+    public ArrayList<IotDevice> getIotPredictionDevices(IotDevice.MajorRoad majorRoad) {
+        return this.iotDeviceRepository.findIotDeviceByMajorRoadAndDeviceIdNoIsNotNull(majorRoad);
+    }
+
     /**
      *
      * @param userId - User ID

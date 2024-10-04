@@ -32,4 +32,6 @@ public interface IotDeviceService {
     TrafficData pollTraffic(UUID deviceId, String location, IotDevice.MajorRoad majorRoad, Integer deviceIdNo, Date createdDate, Boolean isCaliforniaPolling) throws IOException, InterruptedException, URISyntaxException;
 
     TrafficData getRecentTrafficData(UUID deviceId);
+
+    ArrayList<TrafficData> getTrafficDataHistory(UUID deviceId, Integer limit);
 }

@@ -157,4 +157,17 @@ public class IotDeviceController {
         TrafficData recentTrafficData = this.iotDeviceService.getRecentTrafficData(UUID.fromString(deviceId));
         return new ResponseEntity<>(recentTrafficData, HttpStatus.OK);
     }
+
+
+    /**
+     * method that handles GET requests to /api/v1/iot/traffic/history/{deviceId}
+     * @param deviceId - IOT Device ID
+     * @param limit - limit number of past results returned
+     * @return - history of traffic data
+     */
+    @GetMapping(path = "/traffic/history/{deviceId}")
+    public ResponseEntity<ArrayList<TrafficData>> getDeviceTrafficDataHistory(@PathVariable String deviceId, @RequestParam Integer limit) {
+        ArrayList<TrafficData> trafficDataHistory = this.iotDeviceService.getTrafficDataHistory(UUID.fromString(deviceId), limit);
+        return new ResponseEntity<>(trafficDataHistory, HttpStatus.OK);
+    }
 }

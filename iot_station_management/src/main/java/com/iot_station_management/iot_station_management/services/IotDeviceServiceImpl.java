@@ -216,4 +216,16 @@ public class IotDeviceServiceImpl implements IotDeviceService {
     public TrafficData getRecentTrafficData(UUID deviceId) {
         return this.trafficDataRepository.findFirstByDeviceIdOrderByTimestampDesc(deviceId);
     }
+
+
+    /**
+     *
+     * @param deviceId to get traffic data for
+     * @param limit - amount of records to return
+     * @return - list of traffic data for given device id
+     */
+    @Override
+    public ArrayList<TrafficData> getTrafficDataHistory(UUID deviceId, Integer limit) {
+        return this.trafficDataRepository.findByDeviceIdOrderByTimestampDesc(deviceId, limit);
+    }
 }

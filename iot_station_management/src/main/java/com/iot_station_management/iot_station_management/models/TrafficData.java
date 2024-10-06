@@ -70,6 +70,10 @@ public class TrafficData {
         this.timestamp = timestamp;
     }
 
+    public TrafficData() {
+
+    }
+
     public UUID getId() {
         return id;
     }

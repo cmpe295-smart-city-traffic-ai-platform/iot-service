@@ -1,9 +1,6 @@
 package com.iot_station_management.iot_station_management.controllers;
 
-import com.iot_station_management.iot_station_management.models.CreateIotDeviceRequest;
-import com.iot_station_management.iot_station_management.models.IotDevice;
-import com.iot_station_management.iot_station_management.models.TrafficData;
-import com.iot_station_management.iot_station_management.models.UpdateIotDeviceRequest;
+import com.iot_station_management.iot_station_management.models.*;
 import com.iot_station_management.iot_station_management.services.IotDeviceServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -169,5 +166,16 @@ public class IotDeviceController {
     public ResponseEntity<ArrayList<TrafficData>> getDeviceTrafficDataHistory(@PathVariable String deviceId, @RequestParam Integer limit) {
         ArrayList<TrafficData> trafficDataHistory = this.iotDeviceService.getTrafficDataHistory(UUID.fromString(deviceId), limit);
         return new ResponseEntity<>(trafficDataHistory, HttpStatus.OK);
+    }
+
+    /**
+     *
+     * @param deviceIdNo - device id no for prediction device
+     * @return - predictions and timestamps for given prediction device
+     */
+    @GetMapping(path="/traffic/predictions/{deviceIdNo}")
+    public ResponseEntity<TrafficPrediction> getDeviceTrafficPredictions(@PathVariable Integer deviceIdNo) {
+        TrafficPrediction trafficPrediction = this.iotDeviceService.getTrafficPredictions(deviceIdNo);
+        return new ResponseEntity<>(trafficPrediction, HttpStatus.OK);
     }
 }

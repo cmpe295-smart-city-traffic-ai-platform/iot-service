@@ -2,8 +2,10 @@ package com.iot_station_management.iot_station_management.services;
 
 import com.iot_station_management.iot_station_management.models.IotDevice;
 import com.iot_station_management.iot_station_management.models.TrafficData;
+import com.iot_station_management.iot_station_management.models.TrafficPrediction;
 import com.iot_station_management.iot_station_management.repositories.IotDeviceRepository;
 import com.iot_station_management.iot_station_management.repositories.TrafficDataRepository;
+import com.iot_station_management.iot_station_management.repositories.TrafficPredictionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ public class IotDeviceServiceImpl implements IotDeviceService {
 
     private final TrafficDataRepository trafficDataRepository;
 
+    private final TrafficPredictionRepository trafficPredictionRepository;
+
     @Value("${traffic.api.url}")
     private String trafficApiUrl;
 
@@ -49,9 +53,10 @@ public class IotDeviceServiceImpl implements IotDeviceService {
      * @param trafficDataRepository - Traffic Data repository for NoSQL database operations
      */
     @Autowired
-    public IotDeviceServiceImpl(IotDeviceRepository iotDeviceRepository, TrafficDataRepository trafficDataRepository) {
+    public IotDeviceServiceImpl(IotDeviceRepository iotDeviceRepository, TrafficDataRepository trafficDataRepository, TrafficPredictionRepository trafficPredictionRepository) {
         this.iotDeviceRepository = iotDeviceRepository;
         this.trafficDataRepository = trafficDataRepository;
+        this.trafficPredictionRepository = trafficPredictionRepository;
     }
 
     /**
@@ -227,5 +232,16 @@ public class IotDeviceServiceImpl implements IotDeviceService {
     @Override
     public ArrayList<TrafficData> getTrafficDataHistory(UUID deviceId, Integer limit) {
         return this.trafficDataRepository.findByDeviceIdOrderByTimestampDesc(deviceId, limit);
+    }
+
+
+    /**
+     *
+     * @param deviceIdNo - prediction device id no
+     * @return prediction results from mongo collection for device id no
+     */
+    @Override
+    public TrafficPrediction getTrafficPredictions(Integer deviceIdNo) {
+        return this.trafficPredictionRepository.findFirstByDeviceIdNoOrderByTimestampDesc(deviceIdNo);
     }
 }

@@ -2,7 +2,7 @@ package com.iot_station_management.iot_station_management.services;
 
 import com.iot_station_management.iot_station_management.models.IotDevice;
 import com.iot_station_management.iot_station_management.models.TrafficData;
-import org.springframework.scheduling.annotation.EnableAsync;
+import com.iot_station_management.iot_station_management.models.TrafficPrediction;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -34,4 +34,6 @@ public interface IotDeviceService {
     TrafficData getRecentTrafficData(UUID deviceId);
 
     ArrayList<TrafficData> getTrafficDataHistory(UUID deviceId, Integer limit);
+
+    TrafficPrediction getTrafficPredictions(Integer deviceIdNo);
 }

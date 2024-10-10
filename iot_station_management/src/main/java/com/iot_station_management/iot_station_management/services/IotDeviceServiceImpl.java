@@ -17,6 +17,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 
 /*
@@ -196,9 +197,9 @@ public class IotDeviceServiceImpl implements IotDeviceService {
 
             // use HttpClient to make API request
             HttpClient client = HttpClient.newHttpClient();
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            // TODO convert JSON string to JSON
-            String trafficDataResponseString = response.body();
+            CompletableFuture<HttpResponse<String>> response;
+            response = client.sendAsync(request, HttpResponse.BodyHandlers.ofString());
+            String trafficDataResponseString = response.thenApply(HttpResponse::body).join();
 
             // convert timestamp from milliseconds to seconds
             long timestamp = System.currentTimeMillis() / 1000L;

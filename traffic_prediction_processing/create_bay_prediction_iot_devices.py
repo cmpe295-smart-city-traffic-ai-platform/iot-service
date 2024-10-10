@@ -9,7 +9,7 @@ pd.set_option('display.max_rows', None)
 pd.set_option('display.max_columns', None)
 pandas.set_option('display.expand_frame_repr', False)
 
-iot_service_url = "http://localhost:8080/api/iot/v1"
+iot_service_url = "http://localhost:8080/api/v1/iot"
 
 if __name__ == "__main__":
     if not os.path.exists('selected_sensors/'):
@@ -91,6 +91,18 @@ if __name__ == "__main__":
             device_id_file_87.write(f"{str(int(row['device_id_no']))}")
         index += 1
     device_id_file_87.close()
+
+    index = 0
+
+    df_237 = df[df['major_road'] == 'CA237']
+    device_id_file_237 = open("selected_sensors/device_ids_237.txt", "w")
+    for i, row in df_237.iterrows():
+        if index != len(df_237) - 1:
+            device_id_file_237.write(f"{str(int(row['device_id_no']))},")
+        else:
+            device_id_file_237.write(f"{str(int(row['device_id_no']))}")
+        index += 1
+    device_id_file_237.close()
 
     for index, row in df.iterrows():
         device_id_name = int(str(int(row['device_id_no'])))

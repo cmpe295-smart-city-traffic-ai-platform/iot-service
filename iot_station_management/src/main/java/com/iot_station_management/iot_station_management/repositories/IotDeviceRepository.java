@@ -19,6 +19,10 @@ public interface IotDeviceRepository extends JpaRepository<IotDevice, UUID> {
 
     ArrayList<IotDevice> findIotDeviceByMajorRoadAndDeviceIdNoIsNotNull(IotDevice.MajorRoad majorRoad);
 
+    // get active prediction devices
+    ArrayList<IotDevice> findIotDeviceByActiveIsTrueAndDeviceIdNoIsNotNull();
+
+    // get active traffic agent devices
     ArrayList<IotDevice> findIotDeviceByActiveIsTrueAndDeviceIdNoIsNull();
 
     @Query(

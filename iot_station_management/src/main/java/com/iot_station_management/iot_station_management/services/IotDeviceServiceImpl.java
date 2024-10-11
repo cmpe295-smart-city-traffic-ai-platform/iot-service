@@ -96,8 +96,12 @@ public class IotDeviceServiceImpl implements IotDeviceService {
         return this.iotDeviceRepository.findIotDeviceByUserId(userId);
     }
 
-    public ArrayList<IotDevice> getIotPredictionDevices(IotDevice.MajorRoad majorRoad) {
-        return this.iotDeviceRepository.findIotDeviceByMajorRoadAndDeviceIdNoIsNotNull(majorRoad);
+    public ArrayList<IotDevice> getIotPredictionDevices(String majorRoad) {
+        if (majorRoad != null) {
+            return this.iotDeviceRepository.findIotDeviceByMajorRoadAndDeviceIdNoIsNotNull(IotDevice.MajorRoad.valueOf(majorRoad));
+        }
+
+        return this.iotDeviceRepository.findIotDeviceByActiveIsTrueAndDeviceIdNoIsNotNull();
     }
 
     /**

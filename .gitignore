@@ -9,3 +9,4 @@ traffic_prediction_processing/.idea/*
 .DS_STORE
 traffic_prediction_processing/.DS_STORE
 traffic_prediction_processing/*.npz
+traffic_prediction_processing/*.h5

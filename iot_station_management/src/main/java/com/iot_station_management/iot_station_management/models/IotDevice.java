@@ -30,7 +30,7 @@ public class IotDevice {
     private UUID id;
 
     @Column
-    private int deviceIdNo;
+    private Integer deviceIdNo;
 
     @NotNull
     @Pattern(regexp = RegExpClass.ALPHA_NUMERIC_DASH_REGEX)
@@ -85,7 +85,7 @@ public class IotDevice {
         this.updatedAtTimestamp = updatedAtTimestamp;
     }
 
-    public IotDevice(UUID id, int deviceIdNo, String name, String location, UUID userId, Boolean active, @Nullable MajorRoad majorRoad, Date createdAt, Date updatedAt, long createdAtTimestamp, long updatedAtTimestamp) {
+    public IotDevice(UUID id, Integer deviceIdNo, String name, String location, UUID userId, Boolean active, @Nullable MajorRoad majorRoad, Date createdAt, Date updatedAt, long createdAtTimestamp, long updatedAtTimestamp) {
         this.id = id;
         this.deviceIdNo = deviceIdNo;
         this.name = name;
@@ -99,7 +99,7 @@ public class IotDevice {
         this.updatedAtTimestamp = updatedAtTimestamp;
     }
 
-    public IotDevice(int deviceIdNo, String name, String location, UUID userId, Boolean active, Date createdAt, Date updatedAt, long createdAtTimestamp, long updatedAtTimestamp) {
+    public IotDevice(Integer deviceIdNo, String name, String location, UUID userId, Boolean active, Date createdAt, Date updatedAt, long createdAtTimestamp, long updatedAtTimestamp) {
         this.deviceIdNo = deviceIdNo;
         this.name = name;
         this.location = location;
@@ -196,11 +196,11 @@ public class IotDevice {
         this.majorRoad = majorRoad;
     }
 
-    public int getDeviceIdNo() {
+    public Integer getDeviceIdNo() {
         return deviceIdNo;
     }
 
-    public void setDeviceIdNo(int deviceIdNo) {
+    public void setDeviceIdNo(Integer deviceIdNo) {
         this.deviceIdNo = deviceIdNo;
     }
 }

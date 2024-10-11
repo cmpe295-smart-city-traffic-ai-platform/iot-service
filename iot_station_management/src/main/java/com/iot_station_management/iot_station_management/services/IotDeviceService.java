@@ -18,7 +18,7 @@ public interface IotDeviceService {
 
     ArrayList<IotDevice> getUserIotDevices(UUID userId);
 
-    ArrayList<IotDevice> getIotPredictionDevices(IotDevice.MajorRoad majorRoad);
+    ArrayList<IotDevice> getIotPredictionDevices(String majorRoad);
 
     IotDevice updateIotDevice(UUID userId, UUID deviceId, Boolean active, String name, String location);
 

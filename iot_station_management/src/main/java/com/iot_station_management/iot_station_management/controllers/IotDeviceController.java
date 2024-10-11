@@ -83,16 +83,16 @@ public class IotDeviceController {
 
     /**
      * method that handles GET requests to /api/v1/iot/predictionDevices
-     * @param majorRoad - Major Road to get IOT prediction devices for
-     * @return - Array list of IOT Devices for major road
+     * @param majorRoad - Major Road to get IOT prediction devices for, optional
+     * @return - Array list of IOT Devices, specifically prediction devices
      */
     @Operation(
             summary = "Get IOT prediction",
             description = "Get IOT prediction devices for given major road"
     )
-    @GetMapping("/predictionDevice")
-    public ResponseEntity<ArrayList<IotDevice>> getIotPredictionDevices(@RequestParam String majorRoad) {
-        ArrayList<IotDevice> iotDevices = this.iotDeviceService.getIotPredictionDevices(IotDevice.MajorRoad.valueOf(majorRoad));
+    @GetMapping("/predictionDevices")
+    public ResponseEntity<ArrayList<IotDevice>> getIotPredictionDevices(@RequestParam(required = false) String majorRoad) {
+        ArrayList<IotDevice> iotDevices = this.iotDeviceService.getIotPredictionDevices(majorRoad);
         return new ResponseEntity<>(iotDevices, HttpStatus.OK);
     }
 

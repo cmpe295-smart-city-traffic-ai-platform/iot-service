@@ -24,7 +24,8 @@ public class CreateIotDeviceRequest {
     @Nullable
     String majorRoad;
 
-    int deviceIdNo;
+    @Nullable
+    Integer deviceIdNo;
 
     @NotNull
     Boolean active;
@@ -39,7 +40,7 @@ public class CreateIotDeviceRequest {
         this.active = active;
     }
 
-    public CreateIotDeviceRequest(String name, String location, int deviceIdNo, Boolean active) {
+    public CreateIotDeviceRequest(String name, String location, Integer deviceIdNo, Boolean active) {
         this.name = name;
         this.location = location;
         this.deviceIdNo = deviceIdNo;
@@ -95,11 +96,11 @@ public class CreateIotDeviceRequest {
         this.majorRoad = majorRoad;
     }
 
-    public int getDeviceIdNo() {
+    public Integer getDeviceIdNo() {
         return deviceIdNo;
     }
 
-    public void setDeviceIdNo(int deviceIdNo) {
+    public void setDeviceIdNo(Integer deviceIdNo) {
         this.deviceIdNo = deviceIdNo;
     }
 }

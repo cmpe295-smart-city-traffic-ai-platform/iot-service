@@ -1,3 +1,5 @@
+VERSION=1.0.0
+
 compile:
 	mvn clean compile
 
@@ -8,4 +10,5 @@ package:
 	mvn clean package
 
 build-docker-image:
-	mvn spring-boot:build-image
+	make package
+	docker build -t iot_station_management:$(VERSION) .

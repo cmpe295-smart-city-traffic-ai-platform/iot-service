@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iot-station-management-deployment
+  labels:
+    app: iot-station-management
+  namespace: smart-city-traffic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iot-station-management
+  template:
+    metadata:
+      labels:
+        app: iot-station-management
+    spec:
+      containers:
+        - name: iot-station-management
+          image: iot_station_management:1.0.0
+          ports:
+            - containerPort: 8080
+          env:
+            - name: APP_ENV
+              value: dev
+            - name: POSTGRES_HOST
+              value: jdbc:postgresql://10.244.0.7:5432/smart_city_traffic
+            - name: POSTGRES_USERNAME
+              value: iot_station
+            - name: POSTGRES_PASSWORD
+              value: iot_station
+            - name: TRAFFIC_API_KEY
+              value: ""
+            - name: TRAFFIC_API_KEY_CALIFORNIA
+              value: ""
+            - name: MONGODB_HOST
+              value: 10.96.238.105
+            - name: JAVA_TOOL_OPTIONS
+              value: "-Duser.timezone=US/Pacific"
+          livenessProbe:
+            httpGet:
+              port: 8080
+              path: /actuator/health
+            initialDelaySeconds: 40
+            periodSeconds: 20
+            failureThreshold: 5

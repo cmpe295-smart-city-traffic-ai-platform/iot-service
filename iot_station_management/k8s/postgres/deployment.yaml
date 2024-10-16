@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iot-station-management-postgres-deployment
+  labels:
+    app: iot-station-management-postgres
+  namespace: smart-city-traffic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iot-station-management-postgres
+  template:
+    metadata:
+      labels:
+        app: iot-station-management-postgres
+    spec:
+      containers:
+        - name: iot-station-management-postgres
+          image: postgres:16.2-bullseye
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_USER
+              value: iot_station
+            - name: POSTGRES_PASSWORD
+              value: iot_station
+            - name: POSTGRES_DB
+              value: smart_city_traffic

@@ -18,29 +18,37 @@ Backend HTTP microservice dedicated to IOT station management functionalities. B
 
 # Project Structure
 ```bash
-└── iot_station_management
-    ├── IotStationManagementApplication.java
-    ├── config
-    │   └── AsyncConfiguration.java
-    ├── controllers
-    │   └── IotDeviceController.java
-    ├── exceptions
-    │   ├── IotDeviceEntityExceptionHandler.java
-    │   └── IotExceptionDetails.java
-    ├── models
-    │   ├── CreateIotDeviceRequest.java
-    │   ├── IotDevice.java
-    │   ├── TrafficData.java
-    │   └── UpdateIotDeviceRequest.java
-    ├── repositories
-    │   ├── IotDeviceRepository.java
-    │   └── TrafficDataRepository.java
-    ├── schedulers
-    │   └── IotDevicePollingScheduler.java
-    └── services
-        ├── IotDeviceService.java
-        └── IotDeviceServiceImpl.java
+├── IotStationManagementApplication.java
+├── config
+│   ├── AsyncConfiguration.java
+│   └── SwaggerConfig.java
+├── controllers
+│   └── IotDeviceController.java
+├── exceptions
+│   ├── IotDeviceEntityExceptionHandler.java
+│   └── IotExceptionDetails.java
+├── models
+│   ├── CreateIotDeviceRequest.java
+│   ├── IotDevice.java
+│   ├── TrafficData.java
+│   ├── TrafficPrediction.java
+│   └── UpdateIotDeviceRequest.java
+├── repositories
+│   ├── IotDeviceRepository.java
+│   ├── TrafficDataRepository.java
+│   └── TrafficPredictionRepository.java
+├── schedulers
+│   └── IotDevicePollingScheduler.java
+├── services
+│   ├── IotDeviceService.java
+│   └── IotDeviceServiceImpl.java
+└── utils
+    └── RegExpClass.java
 ```
+
+
+# APIs
+APIs and structure can be viewed at `/swagger-ui/index.html`, (e.g. http://localhost:8080/swagger-ui/index.html)
 
 
 # Components:

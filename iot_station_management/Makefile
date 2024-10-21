@@ -12,3 +12,6 @@ package:
 build-docker-image:
 	make package
 	docker build -t iot_station_management:$(VERSION) .
+
+package-build-docker-image:
+	package build-docker-image

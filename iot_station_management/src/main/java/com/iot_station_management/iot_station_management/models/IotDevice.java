@@ -17,7 +17,6 @@ public class IotDevice {
     public enum MajorRoad {
         I280,
         CA85,
-        CA82,
         US101,
         I680,
         I880,

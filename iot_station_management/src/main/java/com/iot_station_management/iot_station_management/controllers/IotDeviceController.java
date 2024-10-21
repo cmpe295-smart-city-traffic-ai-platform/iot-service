@@ -24,7 +24,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/iot")
 public class IotDeviceController {
-    IotDeviceServiceImpl iotDeviceService;
+    private final IotDeviceServiceImpl iotDeviceService;
 
     // @Autowired automatically wires beans for dependencies within Spring framework
     // Autowiring through constructor, dependency injection

@@ -25,14 +25,15 @@ public interface IotDeviceRepository extends JpaRepository<IotDevice, UUID> {
     // get active traffic agent devices
     ArrayList<IotDevice> findIotDeviceByActiveIsTrueAndDeviceIdNoIsNull();
 
+    // map enum indexes
     @Query(
-            value = "SELECT * FROM iot_device WHERE major_road IN (1, 6, 7) AND device_id_no IS NOT NULL AND active = true",
+            value = "SELECT * FROM iot_device WHERE major_road IN (1, 5, 6) AND device_id_no IS NOT NULL AND active = true",
             nativeQuery = true)
     ArrayList<IotDevice> findIotPredictionDevicesCaliforniaRoads();
 
 
     @Query(
-            value = "SELECT * FROM iot_device WHERE major_road IN (0, 3, 4, 5) AND device_id_no IS NOT NULL AND active = true",
+            value = "SELECT * FROM iot_device WHERE major_road IN (0, 2, 3) AND device_id_no IS NOT NULL AND active = true",
             nativeQuery = true)
     ArrayList<IotDevice> findIotPredictionDevicesInterstateUSRoads();
 

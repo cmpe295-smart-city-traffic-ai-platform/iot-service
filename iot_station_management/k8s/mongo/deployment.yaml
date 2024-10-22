@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: iot-station-management-mongo-deployment
+  labels:
+    app: iot-station-management-mongo
+  namespace: smart-city-traffic
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: iot-station-management-mongo
+  template:
+    metadata:
+      labels:
+        app: iot-station-management-mongo
+    spec:
+      containers:
+        - name: iot-station-management-mongo
+          image: mongo:8.0.1
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_DATABASE
+              value: trafficdata
+            - name: MONGO_USERNAME
+              value: iot_station
+            - name: MONGO_PASSWORD
+              value: iot_station

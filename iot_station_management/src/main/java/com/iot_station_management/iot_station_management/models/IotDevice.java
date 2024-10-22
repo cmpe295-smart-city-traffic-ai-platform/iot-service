@@ -15,13 +15,13 @@ public class IotDevice {
     public static final String IOT_DEVICE_TYPE = "IOT";
 
     public enum MajorRoad {
-        I280,
-        CA85,
-        US101,
-        I680,
-        I880,
-        CA237,
-        CA87
+        I280, // 0
+        CA85, // 1
+        US101, // 2
+        I680, // 3
+        I880, // 4
+        CA237, // 5
+        CA87 // 6
     }
 
     @Id

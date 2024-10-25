@@ -10,7 +10,7 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
   mongodb:
-    image: mongo:latest
+    image: mongo:8.0.1
     environment:
       - MONGO_DATABASE=trafficdata
       - MONGO_USERNAME=iot_station

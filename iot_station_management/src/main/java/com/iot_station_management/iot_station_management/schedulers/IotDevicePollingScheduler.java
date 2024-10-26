@@ -1,10 +1,12 @@
 package com.iot_station_management.iot_station_management.schedulers;
 
 import com.iot_station_management.iot_station_management.models.IotDevice;
+import com.iot_station_management.iot_station_management.models.TrafficData;
 import com.iot_station_management.iot_station_management.services.IotDeviceServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -29,6 +31,9 @@ public class IotDevicePollingScheduler {
 
     private final LocalTime START_POLL_TIME = LocalTime.parse("07:30");
     private final LocalTime END_POLL_TIME = LocalTime.parse("19:00");
+
+    @Value("${traffic.poll}")
+    private boolean BEGIN_POLLING;
 
 
     @Autowired
@@ -56,7 +61,7 @@ public class IotDevicePollingScheduler {
     @Scheduled(fixedRate = POLL_DURATION, timeUnit = TimeUnit.SECONDS)
     @Async("asyncTaskExecutor")
     public void schedulePollTraffic() throws InterruptedException {
-        if (!isValidPollingTime()) {
+        if (!BEGIN_POLLING || !isValidPollingTime()) {
             return;
         }
         // get active devices
@@ -67,7 +72,10 @@ public class IotDevicePollingScheduler {
             // poll traffic data
             for (IotDevice activeDevice : activeDevices) {
                 Thread.sleep(500);
-                this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation(), activeDevice.getMajorRoad(), activeDevice.getDeviceIdNo(), createdDate, false);
+                TrafficData result = this.iotDeviceService.pollTraffic(activeDevice.getId(), activeDevice.getLocation(), activeDevice.getMajorRoad(), activeDevice.getDeviceIdNo(), createdDate, false);
+                if (result != null) {
+                    logger.info("Saved traffic data: " + result.getId());
+                }
             }
         }
     }
@@ -79,7 +87,7 @@ public class IotDevicePollingScheduler {
     @Scheduled(fixedRate = POLL_DURATION_PREDICTION_DEVICES_INTERSTATE_US_ROADS, timeUnit = TimeUnit.SECONDS)
     @Async("asyncTaskExecutor")
     public void schedulePollTrafficPredictionDevicesInterstateUSRoads() throws InterruptedException {
-        if (!isValidPollingTime()) {
+        if (!BEGIN_POLLING || !isValidPollingTime()) {
             return;
         }
         // get active devices
@@ -101,7 +109,7 @@ public class IotDevicePollingScheduler {
     @Scheduled(fixedRate = POLL_DURATION_PREDICTION_DEVICES_CALIFORNIA_ROADS, timeUnit = TimeUnit.SECONDS)
     @Async("asyncTaskExecutor")
     public void schedulePollTrafficPredictionDevicesCaliforniaRoads() throws InterruptedException {
-        if (!isValidPollingTime()) {
+        if (!BEGIN_POLLING || !isValidPollingTime()) {
             return;
         }
         // get active devices

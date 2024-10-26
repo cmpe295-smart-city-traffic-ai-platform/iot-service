@@ -37,10 +37,12 @@ spec:
             - name: TRAFFIC_API_KEY_CALIFORNIA
               value: ""
               # mongo host is DNS of EC2 instance running mongo container
-            - name: MONGODB_HOST
-              value: ec2-54-163-223-13.compute-1.amazonaws.com
+            - name: MONGODB_URI
+              value: "mongodb://iot_station:iot_station@ec2-54-175-90-92.compute-1.amazonaws.com:27017/trafficdata"
             - name: JAVA_TOOL_OPTIONS
               value: "-Duser.timezone=US/Pacific"
+            - name: BEGIN_POLLING
+              value: "true"
           livenessProbe:
             httpGet:
               port: 8080

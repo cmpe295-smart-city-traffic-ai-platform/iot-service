@@ -180,7 +180,6 @@ public class IotDeviceServiceImpl implements IotDeviceService {
     @Override
     public TrafficData pollTraffic(UUID deviceId, String location, IotDevice.MajorRoad majorRoad, Integer deviceIdNo, Date createdDate, Boolean isCaliforniaPolling) {
         try {
-
             if (deviceIdNo != null) {
                 logger.info("Polling traffic from device id no: " + deviceIdNo + " for location: " + location);
             } else {

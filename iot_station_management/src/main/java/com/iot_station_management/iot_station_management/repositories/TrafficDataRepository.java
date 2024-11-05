@@ -14,8 +14,9 @@ public interface TrafficDataRepository extends MongoRepository<TrafficData, UUID
 
     // mongo specific, aggregate results based on match and limit
     @Aggregation(pipeline = {
-        "{ '$match': { 'deviceId' : ?0 } }",
-        "{ '$limit' : ?1 }"
+        "{ $match: { deviceId : ?0 } }",
+        "{ $sort: { timestamp: -1 } }",
+        "{ $limit: ?1}"
     })
     ArrayList<TrafficData> findByDeviceIdOrderByTimestampDesc(UUID deviceId, Integer limit);
 }

@@ -235,7 +235,9 @@ public class IotDeviceServiceImpl implements IotDeviceService {
      */
     @Override
     public ArrayList<TrafficData> getTrafficDataHistory(UUID deviceId, Integer limit) {
-        return this.trafficDataRepository.findByDeviceIdOrderByTimestampDesc(deviceId, limit);
+        ArrayList<TrafficData> trafficHistory = this.trafficDataRepository.findByDeviceIdOrderByTimestampDesc(deviceId, limit);
+        Collections.reverse(trafficHistory);
+        return trafficHistory;
     }
 
 

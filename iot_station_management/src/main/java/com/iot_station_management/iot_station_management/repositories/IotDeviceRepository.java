@@ -33,7 +33,7 @@ public interface IotDeviceRepository extends JpaRepository<IotDevice, UUID> {
 
 
     @Query(
-            value = "SELECT * FROM iot_device WHERE major_road IN (0, 2, 3) AND device_id_no IS NOT NULL AND active = true",
+            value = "SELECT * FROM iot_device WHERE major_road IN (0, 2, 3, 4) AND device_id_no IS NOT NULL AND active = true",
             nativeQuery = true)
     ArrayList<IotDevice> findIotPredictionDevicesInterstateUSRoads();
 

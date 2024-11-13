@@ -23,14 +23,16 @@ public class IotDevicePollingScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(IotDevicePollingScheduler.class);
 
+    // duration in seconds when poll should execute again
     private final int POLL_DURATION = 600;
 
     private final int POLL_DURATION_PREDICTION_DEVICES_CALIFORNIA_ROADS = 600;
 
     private final int POLL_DURATION_PREDICTION_DEVICES_INTERSTATE_US_ROADS = 600;
 
-    private final LocalTime START_POLL_TIME = LocalTime.parse("07:30");
-    private final LocalTime END_POLL_TIME = LocalTime.parse("19:00");
+    // start and end time for polling schedule
+    private final LocalTime START_POLL_TIME = LocalTime.parse("06:30");
+    private final LocalTime END_POLL_TIME = LocalTime.parse("20:00");
 
     @Value("${traffic.poll}")
     private boolean BEGIN_POLLING;

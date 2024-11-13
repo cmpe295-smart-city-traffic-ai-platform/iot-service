@@ -163,7 +163,7 @@ public class IotDeviceController {
      * @return - history of traffic data
      */
     @GetMapping(path = "/traffic/history/{deviceId}")
-    public ResponseEntity<ArrayList<TrafficData>> getDeviceTrafficDataHistory(@PathVariable String deviceId, @RequestParam(defaultValue = "200") Integer limit ) {
+    public ResponseEntity<ArrayList<TrafficData>> getDeviceTrafficDataHistory(@PathVariable String deviceId, @RequestParam(defaultValue = "100") Integer limit ) {
         ArrayList<TrafficData> trafficDataHistory = this.iotDeviceService.getTrafficDataHistory(UUID.fromString(deviceId), limit);
         return new ResponseEntity<>(trafficDataHistory, HttpStatus.OK);
     }
